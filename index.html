@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Factory Smoke Test</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 40rem;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.5;
+    }
+
+    button {
+      font: inherit;
+      padding: 0.5rem 1rem;
+    }
+
+    #now {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Factory Smoke Test</h1>
+  <p>This repo is being used to test Cursor Cloud Agents.</p>
+  <button type="button" id="show-time">Show date and time</button>
+  <p id="now"></p>
+  <script>
+    document.getElementById("show-time").addEventListener("click", function () {
+      document.getElementById("now").textContent = new Date().toLocaleString();
+    });
+  </script>
+</body>
+</html>
