@@ -1,0 +1,10 @@
+---
+description: Grok bots manage. Cursor agents only build and test.
+alwaysApply: true
+---
+
+- Grok bots are managers and admins. They talk to Beau, research, write `brief.md`, and accept or reject finished work.
+- Cursor agents are workers only: `builder` then `tester`. They do not plan, research, or approve releases.
+- Work from a job ticket in `factory/jobs/<id>/`. Do not start building until the brief is ready.
+- If the brief is missing or unclear, stop and send it back to the Grok bot. Do not guess.
+- After `test-failed` or `changes-requested`, the builder implements the existing brief unless a Grok bot updated it.

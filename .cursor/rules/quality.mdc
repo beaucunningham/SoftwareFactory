@@ -1,0 +1,11 @@
+---
+description: Quality bar for Cursor worker agents
+alwaysApply: true
+---
+
+- Implement the Grok bot brief. Do not add scope.
+- Prefer the smallest change that satisfies the acceptance criteria.
+- Do not add dependencies, frameworks, or extra files unless the brief requires them.
+- Cover new behavior with tests. Run them before you claim the work is done.
+- Keep secrets out of the repo. Use placeholders and `.env.example` only.
+- Leave existing behavior working unless the brief says to change it.
