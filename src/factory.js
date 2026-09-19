@@ -75,7 +75,7 @@ function buildPrompt(role, job, config) {
 
 function helpText() {
   return [
-    "SoftwareFactory — Grok bots manage. Cursor agents build and test.",
+    "SoftwareFactory — Grok bots manage. Cursor agents build, test, and check.",
     "",
     "Usage:",
     "  npm start -- roles",
