@@ -64,7 +64,7 @@ function buildPrompt(role, job, config) {
     `Status: ${job.status}`,
     note,
     "",
-    `Follow .cursor/agents/${role.id}.md.`,
+    `Follow ${role.file}.`,
     `Work in factory/jobs/${job.id}/.`,
     "Read the Grok bot brief. Do not invent requirements.",
     "Read AGENTS.md before you start.",
@@ -82,9 +82,9 @@ function helpText() {
     "  npm start -- new-job \"Add a notes API\"",
     "  npm start -- ready [job-id]",
     "  npm start -- status",
-    "  npm start -- prompt <builder|tester> [job-id]",
+    "  npm start -- prompt <builder|tester|security|ui> [job-id]",
     "",
-    "Pipeline: grokbot → builder → tester → grokbot",
+    "Pipeline: grokbot → builder → tester → security → ui → grokbot",
   ].join("\n");
 }
 
@@ -127,7 +127,9 @@ function run(args, options = {}) {
     const [roleId, jobId] = rest;
     const role = roles.find((item) => item.id === roleId);
     if (!role) {
-      throw new Error(`Unknown worker "${roleId || ""}". Cursor workers are: builder, tester`);
+      throw new Error(
+        `Unknown worker "${roleId || ""}". Cursor workers are: ${roles.map((item) => item.id).join(", ")}`,
+      );
     }
     const job = findJob(root, jobId);
     if (!job) {
