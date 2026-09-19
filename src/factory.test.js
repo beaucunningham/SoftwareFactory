@@ -40,12 +40,12 @@ function writeBrief(dir, jobId) {
 
 test("help lists the manager-to-worker pipeline", () => {
   const output = run(["help"], { root });
-  assert.match(output, /grokbot → builder → tester → grokbot/);
+  assert.match(output, /grokbot → builder → tester → security → ui → grokbot/);
 });
 
 test("roles lists only Cursor workers", () => {
   const output = run(["roles"], { root });
-  assert.match(output, /- builder:[\s\S]*- tester:/);
+  assert.match(output, /- builder:[\s\S]*- tester:[\s\S]*- security:[\s\S]*- ui:/);
   assert.doesNotMatch(output, /- planner:/);
   assert.doesNotMatch(output, /- reviewer:/);
   assert.match(output, /Grok bots write the brief/);
@@ -92,6 +92,32 @@ test("prompt builds a worker brief and rejects manager roles", () => {
   assert.match(prompt, /Do not invent requirements/);
 
   assert.throws(() => run(["prompt", "planner"], { root: dir }), /Unknown worker/);
+
+  const security = run(["prompt", "security", "001-add-a-notes-api"], { root: dir });
+  assert.match(security, /You are a SoftwareFactory worker \(security\)/);
+  const ui = run(["prompt", "ui", "001-add-a-notes-api"], { root: dir });
+  assert.match(ui, /You are a SoftwareFactory worker \(ui\)/);
+});
+
+test("status walks tester then security then ui", () => {
+  const dir = makeWorkspace();
+  run(["new-job", "Add a notes API"], { root: dir });
+  writeBrief(dir, "001-add-a-notes-api");
+  run(["ready", "001-add-a-notes-api"], { root: dir });
+
+  const jobPath = path.join(dir, "factory", "jobs", "001-add-a-notes-api", "job.json");
+  const setStatus = (status) => {
+    const job = JSON.parse(fs.readFileSync(jobPath, "utf8"));
+    job.status = status;
+    fs.writeFileSync(jobPath, `${JSON.stringify(job, null, 2)}\n`);
+  };
+
+  setStatus("tested");
+  assert.match(run(["status"], { root: dir }), /next: security/);
+  setStatus("secured");
+  assert.match(run(["status"], { root: dir }), /next: ui/);
+  setStatus("ui-checked");
+  assert.match(run(["status"], { root: dir }), /next: grokbot \(manager\)/);
 });
 
 test("unknown command and missing job fail clearly", () => {

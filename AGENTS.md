@@ -2,12 +2,12 @@
 
 Grok bots are managers. Cursor agents are workers.
 
-Beau talks to Grok bots. Those bots research and write the brief. Cursor agents only build the code and run the tests.
+Beau talks to Grok bots. Those bots research and write the brief. Cursor agents build the code, run tests, then check security and UI.
 
 ## Pipeline
 
 ```text
-Beau → Grok bot → brief.md → builder → tester → Grok bot
+Beau → Grok bot → brief.md → builder → tester → security → ui → Grok bot
 ```
 
 | Who | Reads | Writes |
@@ -15,16 +15,20 @@ Beau → Grok bot → brief.md → builder → tester → Grok bot
 | Grok bot | Beau, research | `brief.md`, accept/reject |
 | builder | `brief.md` | product code, `build.md` |
 | tester | brief + code | tests, `test-report.md` |
+| security | brief + code | `security-report.md` |
+| ui | brief + running app | `ui-report.md` |
 
 Job tickets live in `factory/jobs/<id>/`. Worker prompts live in `.cursor/agents/`. Manager instructions live in `factory/managers/GROKBOT.md`.
 
 ## Commands
 
 ```bash
-npm start -- new-job "Add a notes API"
-npm start -- ready 001-add-a-notes-api
-npm start -- prompt builder 001-add-a-notes-api
-npm start -- prompt tester 001-add-a-notes-api
+npm start -- new-job "Add checkout"
+npm start -- ready 001-add-checkout
+npm start -- prompt builder 001-add-checkout
+npm start -- prompt tester 001-add-checkout
+npm start -- prompt security 001-add-checkout
+npm start -- prompt ui 001-add-checkout
 npm start -- status
 npm test
 ```

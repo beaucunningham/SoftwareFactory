@@ -1,13 +1,17 @@
 {
   "name": "SoftwareFactory",
   "managers": ["grokbot"],
-  "pipeline": ["builder", "tester"],
+  "pipeline": ["builder", "tester", "security", "ui"],
   "statuses": {
     "draft": "grokbot",
     "briefed": "builder",
     "built": "tester",
-    "tested": "grokbot",
+    "tested": "security",
+    "secured": "ui",
+    "ui-checked": "grokbot",
     "test-failed": "builder",
+    "security-failed": "builder",
+    "ui-failed": "builder",
     "changes-requested": "builder",
     "accepted": null
   }

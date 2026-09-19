@@ -1,6 +1,6 @@
 # Brief
 
-Filled by a Grok bot (manager). Cursor agents do not write this file.
+Filled by a Grok bot (manager), or by Beau until Grok bot is running. Cursor agents do not write this file.
 
 ## What to build
 
@@ -14,6 +14,14 @@ _What did you check? Link sources. Note anything that is still unknown._
 
 - [ ] _A concrete check the tester can prove_
 - [ ] _Another concrete check_
+
+## User-facing UI
+
+_None, or the screens and the main click path._
+
+## Payments and auth
+
+_None, or how login and money work._
 
 ## Out of scope
 
