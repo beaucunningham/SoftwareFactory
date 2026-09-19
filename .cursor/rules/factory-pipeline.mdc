@@ -1,11 +1,10 @@
 ---
-description: How SoftwareFactory agents hand work to each other
+description: Grok bots manage. Cursor agents only build and test.
 alwaysApply: true
 ---
 
-- Work from a job ticket in `factory/jobs/<id>/` whenever one exists.
-- Follow the pipeline: planner → builder → tester → reviewer.
-- Each role writes its artifact (`spec.md`, `build.md`, `test-report.md`, `review.md`) and updates `job.json`.
-- Do not skip a stage to “save time.” A missing spec or test report is a failed handoff.
-- If you are a parent agent, delegate to the `planner`, `builder`, `tester`, and `reviewer` subagents instead of doing every role yourself.
-- After `changes-requested` or `test-failed`, send the job back to the builder with the review or test report.
+- Grok bots are managers and admins. They talk to Beau, research, write `brief.md`, and accept or reject finished work.
+- Cursor agents are workers only: `builder` then `tester`. They do not plan, research, or approve releases.
+- Work from a job ticket in `factory/jobs/<id>/`. Do not start building until the brief is ready.
+- If the brief is missing or unclear, stop and send it back to the Grok bot. Do not guess.
+- After `test-failed` or `changes-requested`, the builder implements the existing brief unless a Grok bot updated it.

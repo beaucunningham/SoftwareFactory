@@ -1,39 +1,37 @@
 # SoftwareFactory agent guide
 
-This repository is a software factory. Specialized agents work in sequence to ship small, tested changes for programming apps.
+Grok bots are managers. Cursor agents are workers.
+
+Beau talks to Grok bots. Those bots research and write the brief. Cursor agents only build the code and run the tests.
 
 ## Pipeline
 
 ```text
-request → planner → builder → tester → reviewer → approved
+Beau → Grok bot → brief.md → builder → tester → Grok bot
 ```
 
-If tests fail or review requests changes, the builder goes again.
-
-| Role | Reads | Writes |
+| Who | Reads | Writes |
 | --- | --- | --- |
-| planner | `request.md` | `spec.md` |
-| builder | `spec.md` | product code, `build.md` |
-| tester | spec + code | tests, `test-report.md` |
-| reviewer | everything | `review.md` |
+| Grok bot | Beau, research | `brief.md`, accept/reject |
+| builder | `brief.md` | product code, `build.md` |
+| tester | brief + code | tests, `test-report.md` |
 
-Job tickets live in `factory/jobs/<id>/`. Role prompts live in `.cursor/agents/`.
+Job tickets live in `factory/jobs/<id>/`. Worker prompts live in `.cursor/agents/`. Manager instructions live in `factory/managers/GROKBOT.md`.
 
 ## Commands
 
 ```bash
-npm start              # show factory help
-npm start -- roles     # list specialist agents
 npm start -- new-job "Add a notes API"
+npm start -- ready 001-add-a-notes-api
+npm start -- prompt builder 001-add-a-notes-api
+npm start -- prompt tester 001-add-a-notes-api
 npm start -- status
-npm start -- prompt planner 001-add-a-notes-api
 npm test
 ```
 
-## How to run a job
+## Worker rules
 
-1. Create a job and edit `request.md`.
-2. Start a Cloud Agent (or local Agent) with the prompt from `npm start -- prompt <role> <id>`.
-3. Or start one parent agent and tell it to `/run-factory` on that job.
-
-Do not implement product code until a spec exists.
+- Do not write `brief.md`.
+- Do not research product direction or invent requirements.
+- If the brief is missing or unclear, stop and return it to the Grok bot.
+- Do not mark a job accepted. That is a manager decision.

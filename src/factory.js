@@ -1,7 +1,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
+// fs is used by loadConfig
 
-const { createJob, findJob, listJobs } = require("./jobs");
+const { createJob, findJob, listJobs, markReady } = require("./jobs");
 const { loadRoles } = require("./roles");
 
 function loadConfig(root) {
@@ -13,11 +14,25 @@ function nextRole(config, status) {
   return config.statuses[status] ?? null;
 }
 
+function formatNext(next) {
+  if (!next) {
+    return "done";
+  }
+  if (next === "grokbot") {
+    return "next: grokbot (manager)";
+  }
+  return `next: ${next}`;
+}
+
 function formatRoles(roles) {
-  const lines = ["SoftwareFactory roles:", ""];
+  const lines = [
+    "Cursor workers:",
+    "",
+  ];
   for (const role of roles) {
     lines.push(`- ${role.id}: ${role.description}`);
   }
+  lines.push("", "Managers: Grok bots write the brief and accept finished work.");
   return lines.join("\n");
 }
 
@@ -28,9 +43,7 @@ function formatStatus(jobs, config) {
 
   const lines = ["Jobs:", ""];
   for (const job of jobs) {
-    const next = nextRole(config, job.status);
-    const waiting = next ? `next: ${next}` : "done";
-    lines.push(`- ${job.id}  [${job.status}]  ${waiting}`);
+    lines.push(`- ${job.id}  [${job.status}]  ${formatNext(nextRole(config, job.status))}`);
     lines.push(`  ${job.title}`);
   }
   return lines.join("\n");
@@ -40,11 +53,11 @@ function buildPrompt(role, job, config) {
   const next = nextRole(config, job.status);
   const note =
     next && next !== role.id
-      ? `This job is currently waiting for ${next}. Continue only if you were asked to take over.`
+      ? `This job is currently waiting for ${next === "grokbot" ? "a Grok bot" : next}. Continue only if you were asked to take over.`
       : `This job is ready for ${role.id}.`;
 
   return [
-    `You are the SoftwareFactory ${role.id}.`,
+    `You are a SoftwareFactory worker (${role.id}). A Grok bot is the manager.`,
     "",
     `Job: ${job.id}`,
     `Title: ${job.title}`,
@@ -53,6 +66,7 @@ function buildPrompt(role, job, config) {
     "",
     `Follow .cursor/agents/${role.id}.md.`,
     `Work in factory/jobs/${job.id}/.`,
+    "Read the Grok bot brief. Do not invent requirements.",
     "Read AGENTS.md before you start.",
     "",
     role.prompt,
@@ -61,15 +75,16 @@ function buildPrompt(role, job, config) {
 
 function helpText() {
   return [
-    "SoftwareFactory — specialist cloud agents that build quality app code.",
+    "SoftwareFactory — Grok bots manage. Cursor agents build and test.",
     "",
     "Usage:",
     "  npm start -- roles",
     "  npm start -- new-job \"Add a notes API\"",
+    "  npm start -- ready [job-id]",
     "  npm start -- status",
-    "  npm start -- prompt <role> [job-id]",
+    "  npm start -- prompt <builder|tester> [job-id]",
     "",
-    "Pipeline: planner → builder → tester → reviewer",
+    "Pipeline: grokbot → builder → tester → grokbot",
   ].join("\n");
 }
 
@@ -91,7 +106,17 @@ function run(args, options = {}) {
   if (command === "new-job") {
     const title = rest.join(" ").trim();
     const job = createJob(root, title);
-    return `Created job ${job.id}\nNext: edit factory/jobs/${job.id}/request.md\nThen: npm start -- prompt planner ${job.id}`;
+    return [
+      `Created job ${job.id}`,
+      `Next: a Grok bot fills factory/jobs/${job.id}/brief.md`,
+      `Then: npm start -- ready ${job.id}`,
+      `Then: npm start -- prompt builder ${job.id}`,
+    ].join("\n");
+  }
+
+  if (command === "ready") {
+    const job = markReady(root, rest[0]);
+    return `Job ${job.id} is briefed and ready for the builder.\nNext: npm start -- prompt builder ${job.id}`;
   }
 
   if (command === "status") {
@@ -102,7 +127,7 @@ function run(args, options = {}) {
     const [roleId, jobId] = rest;
     const role = roles.find((item) => item.id === roleId);
     if (!role) {
-      throw new Error(`Unknown role "${roleId || ""}". Try: npm start -- roles`);
+      throw new Error(`Unknown worker "${roleId || ""}". Cursor workers are: builder, tester`);
     }
     const job = findJob(root, jobId);
     if (!job) {

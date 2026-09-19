@@ -1,23 +1,24 @@
 # SoftwareFactory
 
-A software factory for programming apps. Specialist Cursor cloud agents work in sequence so ideas become small, tested pull requests instead of one-shot dumps of code.
+A software factory for programming apps. **Grok bots are the managers.** **Cursor cloud agents are the workers.**
 
-> **Description:** A multi-agent factory that plans, builds, tests, and reviews app work.
+You tell a Grok bot what you want. It researches and writes the brief. Cursor agents only build the code and run the tests. The Grok bot then accepts the result or sends it back.
+
+> **Description:** Grok bots manage. Cursor agents build and test.
 
 ## How the factory works
 
 ```text
-request → planner → builder → tester → reviewer → approved
+Beau → Grok bot → brief → Cursor builder → Cursor tester → Grok bot
 ```
 
-| Agent | Job |
-| --- | --- |
-| **planner** | Turns a request into a small spec with acceptance criteria |
-| **builder** | Implements only what the spec asked for |
-| **tester** | Proves the acceptance criteria with tests |
-| **reviewer** | Approves the change or sends it back |
+| Who | Role | Job |
+| --- | --- | --- |
+| **Grok bot** | Manager / admin | Talk to you, research, write the brief, accept or reject the result |
+| **builder** | Cursor worker | Implement only the brief |
+| **tester** | Cursor worker | Prove the acceptance criteria with tests |
 
-They hand work to each other through job tickets in `factory/jobs/`. Cursor can also run the four roles as subagents from one parent Cloud Agent.
+Cursor agents do not plan the product, do research, or approve releases.
 
 ## Getting started
 
@@ -32,23 +33,28 @@ npm test
 
 ## Run a job
 
-1. Create a ticket and describe the work:
+1. Create a ticket:
 
    ```bash
    npm start -- new-job "Add a notes API"
    ```
 
-   Edit `factory/jobs/<id>/request.md`.
-
-2. Launch the next specialist. From [cursor.com/agents](https://cursor.com/agents), start a Cloud Agent on this repo and paste:
+2. A Grok bot fills `factory/jobs/<id>/brief.md` using `factory/managers/GROKBOT.md`, then marks it ready:
 
    ```bash
-   npm start -- prompt planner <id>
+   npm start -- ready <id>
    ```
 
-   Repeat with `builder`, `tester`, and `reviewer` as the ticket moves forward.
+3. Launch Cursor workers from [cursor.com/agents](https://cursor.com/agents) with:
 
-3. Or start one parent Cloud Agent and tell it to follow `.cursor/skills/run-factory/SKILL.md` for that job. It will delegate to the project subagents in `.cursor/agents/`.
+   ```bash
+   npm start -- prompt builder <id>
+   npm start -- prompt tester <id>
+   ```
+
+   Or start one parent Cursor agent and tell it to follow `.cursor/skills/run-factory/SKILL.md` after the brief is ready.
+
+4. The Grok bot reads `build.md` and `test-report.md`, then accepts the job or updates the brief.
 
 Check progress with:
 
@@ -60,12 +66,12 @@ npm start -- roles
 ## Project structure
 
 ```text
-.cursor/agents/    Specialist agent prompts (planner, builder, tester, reviewer)
-.cursor/rules/     Quality bar and pipeline rules
-.cursor/skills/    How a parent agent runs the factory
-factory/jobs/      Job tickets and handoff artifacts
-src/               Factory CLI
-AGENTS.md          Operating guide for cloud agents
+.cursor/agents/           Cursor workers: builder, tester
+.cursor/rules/            Worker quality and pipeline rules
+factory/managers/         Grok bot manager guide
+factory/jobs/             Briefs and worker artifacts
+src/                      Factory CLI
+AGENTS.md                 Operating guide
 ```
 
 ## License

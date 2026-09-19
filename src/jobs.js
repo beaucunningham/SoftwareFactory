@@ -5,6 +5,10 @@ function jobsDir(root) {
   return path.join(root, "factory", "jobs");
 }
 
+function jobDir(root, jobId) {
+  return path.join(jobsDir(root), jobId);
+}
+
 function slugify(title) {
   const slug = title
     .toLowerCase()
@@ -29,6 +33,12 @@ function nextJobNumber(root) {
   return numbers.length === 0 ? 1 : Math.max(...numbers) + 1;
 }
 
+function writeJob(root, job) {
+  const next = { ...job, updatedAt: new Date().toISOString() };
+  fs.writeFileSync(path.join(jobDir(root, next.id), "job.json"), `${JSON.stringify(next, null, 2)}\n`);
+  return next;
+}
+
 function createJob(root, title) {
   const trimmed = title.trim();
   if (!trimmed) {
@@ -36,26 +46,53 @@ function createJob(root, title) {
   }
 
   const id = `${String(nextJobNumber(root)).padStart(3, "0")}-${slugify(trimmed)}`;
-  const dir = path.join(jobsDir(root), id);
+  const dir = jobDir(root, id);
   fs.mkdirSync(dir, { recursive: true });
 
   const now = new Date().toISOString();
   const job = {
     id,
     title: trimmed,
-    status: "requested",
+    status: "draft",
     createdAt: now,
     updatedAt: now,
   };
 
-  const templatePath = path.join(root, "factory", "templates", "request.md");
+  const templatePath = path.join(root, "factory", "templates", "brief.md");
   const template = fs.existsSync(templatePath)
     ? fs.readFileSync(templatePath, "utf8")
-    : "# Request\n\n";
+    : "# Brief\n\n";
 
   fs.writeFileSync(path.join(dir, "job.json"), `${JSON.stringify(job, null, 2)}\n`);
-  fs.writeFileSync(path.join(dir, "request.md"), template);
+  fs.writeFileSync(path.join(dir, "brief.md"), template);
   return job;
+}
+
+function readBrief(root, jobId) {
+  const briefPath = path.join(jobDir(root, jobId), "brief.md");
+  if (!fs.existsSync(briefPath)) {
+    return "";
+  }
+  return fs.readFileSync(briefPath, "utf8");
+}
+
+function isBriefReady(brief) {
+  const hasCriteria = /acceptance criteria/i.test(brief);
+  const stillTemplate = /_What should exist|_What did you check|_A concrete check/i.test(brief);
+  return hasCriteria && !stillTemplate && brief.trim().length > 80;
+}
+
+function markReady(root, jobId) {
+  const job = findJob(root, jobId);
+  if (!job) {
+    throw new Error("No job found. Create one with: npm start -- new-job \"Your idea\"");
+  }
+
+  if (!isBriefReady(readBrief(root, job.id))) {
+    throw new Error(`Brief is still a draft. A Grok bot must finish factory/jobs/${job.id}/brief.md first.`);
+  }
+
+  return writeJob(root, { ...job, status: "briefed" });
 }
 
 function readJob(dir) {
@@ -91,7 +128,9 @@ function findJob(root, jobId) {
 module.exports = {
   createJob,
   findJob,
+  isBriefReady,
   listJobs,
+  markReady,
   nextJobNumber,
   slugify,
 };
