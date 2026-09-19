@@ -1,0 +1,13 @@
+{
+  "name": "SoftwareFactory",
+  "pipeline": ["planner", "builder", "tester", "reviewer"],
+  "statuses": {
+    "requested": "planner",
+    "specified": "builder",
+    "built": "tester",
+    "tested": "reviewer",
+    "test-failed": "builder",
+    "changes-requested": "builder",
+    "approved": null
+  }
+}

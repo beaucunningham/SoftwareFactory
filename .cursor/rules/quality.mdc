@@ -1,0 +1,11 @@
+---
+description: Quality bar for all SoftwareFactory work
+alwaysApply: true
+---
+
+- Prefer the smallest change that satisfies the spec.
+- Do not add dependencies, frameworks, or extra files unless they are required.
+- Cover new behavior with tests. Run them before you claim the work is done.
+- Keep secrets out of the repo. Use placeholders and `.env.example` only.
+- Leave existing behavior working unless the spec says to change it.
+- Write clear names and short functions. Avoid clever code.

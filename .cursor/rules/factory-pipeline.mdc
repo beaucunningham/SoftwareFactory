@@ -1,0 +1,11 @@
+---
+description: How SoftwareFactory agents hand work to each other
+alwaysApply: true
+---
+
+- Work from a job ticket in `factory/jobs/<id>/` whenever one exists.
+- Follow the pipeline: planner → builder → tester → reviewer.
+- Each role writes its artifact (`spec.md`, `build.md`, `test-report.md`, `review.md`) and updates `job.json`.
+- Do not skip a stage to “save time.” A missing spec or test report is a failed handoff.
+- If you are a parent agent, delegate to the `planner`, `builder`, `tester`, and `reviewer` subagents instead of doing every role yourself.
+- After `changes-requested` or `test-failed`, send the job back to the builder with the review or test report.
