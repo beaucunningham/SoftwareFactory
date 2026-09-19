@@ -33,6 +33,16 @@ npm start
 npm test
 ```
 
+## Factory Smoke Test
+
+Open `index.html` in your browser. From the repo root:
+
+```bash
+xdg-open index.html
+```
+
+On macOS you can use `open index.html`. You can also double-click `index.html` or use File → Open File in the browser.
+
 ## Run a job
 
 1. Create a ticket:
