@@ -82,7 +82,7 @@ function run(args, options = {}) {
   }
 
   const config = loadConfig(root);
-  const roles = loadRoles(root);
+  const roles = loadRoles(root, config.pipeline);
 
   if (command === "roles") {
     return formatRoles(roles);

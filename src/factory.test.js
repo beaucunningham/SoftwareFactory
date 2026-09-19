@@ -21,11 +21,9 @@ test("help lists the factory pipeline", () => {
   assert.match(output, /planner → builder → tester → reviewer/);
 });
 
-test("roles lists the specialist agents", () => {
+test("roles lists the specialist agents in pipeline order", () => {
   const output = run(["roles"], { root });
-  for (const role of ["planner", "builder", "tester", "reviewer"]) {
-    assert.match(output, new RegExp(`- ${role}:`));
-  }
+  assert.match(output, /- planner:[\s\S]*- builder:[\s\S]*- tester:[\s\S]*- reviewer:/);
 });
 
 test("new-job creates a ticket and status shows the next role", () => {

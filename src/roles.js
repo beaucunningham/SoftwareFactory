@@ -19,16 +19,15 @@ function parseFrontmatter(text) {
   return { data, body: match[2].trim() };
 }
 
-function loadRoles(root) {
+function loadRoles(root, pipeline = []) {
   const agentsDir = path.join(root, ".cursor", "agents");
   if (!fs.existsSync(agentsDir)) {
     return [];
   }
 
-  return fs
+  const roles = fs
     .readdirSync(agentsDir)
     .filter((name) => name.endsWith(".md"))
-    .sort()
     .map((fileName) => {
       const source = fs.readFileSync(path.join(agentsDir, fileName), "utf8");
       const { data, body } = parseFrontmatter(source);
@@ -41,6 +40,12 @@ function loadRoles(root) {
         file: path.join(".cursor", "agents", fileName),
       };
     });
+
+  return roles.sort((a, b) => {
+    const aIndex = pipeline.indexOf(a.id);
+    const bIndex = pipeline.indexOf(b.id);
+    return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex);
+  });
 }
 
 module.exports = { loadRoles, parseFrontmatter };
