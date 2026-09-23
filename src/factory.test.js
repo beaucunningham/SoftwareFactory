@@ -13,6 +13,12 @@ function makeWorkspace() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "software-factory-"));
   fs.cpSync(path.join(root, ".cursor"), path.join(dir, ".cursor"), { recursive: true });
   fs.cpSync(path.join(root, "factory"), path.join(dir, "factory"), { recursive: true });
+  const jobs = path.join(dir, "factory", "jobs");
+  for (const entry of fs.readdirSync(jobs, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      fs.rmSync(path.join(jobs, entry.name), { recursive: true, force: true });
+    }
+  }
   return dir;
 }
 
@@ -185,7 +191,8 @@ test("set-status and accept reject missing jobs and illegal moves", () => {
 
 test("unknown command and missing job fail clearly", () => {
   assert.throws(() => run(["ship-it"], { root }), /Unknown command/);
-  assert.throws(() => run(["prompt", "builder"], { root }), /No job found/);
+  const dir = makeWorkspace();
+  assert.throws(() => run(["prompt", "builder"], { root: dir }), /No job found/);
 });
 
 test("slugify keeps job ids readable", () => {
