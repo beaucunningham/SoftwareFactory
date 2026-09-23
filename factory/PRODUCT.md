@@ -2,6 +2,8 @@
 
 Current product: hunting companion (name TBD).
 
+Map is the primary, default tab. Guide chat is a side feature.
+
 Product code is on Cursor Origin, not in this repository:
 
 https://cursor.com/codebase/beau-cunningham/tmp-9883dbb9b4ecf3e0
