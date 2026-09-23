@@ -1,5 +1,6 @@
 {
   "name": "SoftwareFactory",
+  "productRepo": "https://cursor.com/codebase/beau-cunningham/tmp-9883dbb9b4ecf3e0",
   "managers": ["grokbot"],
   "pipeline": ["builder", "tester", "security", "ui"],
   "statuses": {
