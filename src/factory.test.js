@@ -41,6 +41,11 @@ function writeBrief(dir, jobId) {
 test("help lists the manager-to-worker pipeline", () => {
   const output = run(["help"], { root });
   assert.match(output, /grokbot → builder → tester → security → ui → grokbot/);
+  assert.match(output, /set-status <status> \[job-id\]/);
+  assert.match(output, /accept \[job-id\]/);
+  assert.match(output, /new-job/);
+  assert.match(output, /ready \[job-id\]/);
+  assert.match(output, /prompt <builder\|tester\|security\|ui>/);
 });
 
 test("roles lists only Cursor workers", () => {
@@ -90,34 +95,92 @@ test("prompt builds a worker brief and rejects manager roles", () => {
   assert.match(prompt, /You are a SoftwareFactory worker \(builder\)/);
   assert.match(prompt, /Grok bot is the manager/);
   assert.match(prompt, /Do not invent requirements/);
+  assert.match(prompt, /set-status built/);
 
   assert.throws(() => run(["prompt", "planner"], { root: dir }), /Unknown worker/);
 
   const security = run(["prompt", "security", "001-add-a-notes-api"], { root: dir });
   assert.match(security, /You are a SoftwareFactory worker \(security\)/);
+  assert.match(security, /set-status secured/);
   const ui = run(["prompt", "ui", "001-add-a-notes-api"], { root: dir });
   assert.match(ui, /You are a SoftwareFactory worker \(ui\)/);
+  assert.match(ui, /set-status ui-checked/);
 });
 
-test("status walks tester then security then ui", () => {
-  const dir = makeWorkspace();
+function readJobFile(dir, jobId) {
+  return JSON.parse(fs.readFileSync(path.join(dir, "factory", "jobs", jobId, "job.json"), "utf8"));
+}
+
+function briefJob(dir) {
   run(["new-job", "Add a notes API"], { root: dir });
   writeBrief(dir, "001-add-a-notes-api");
   run(["ready", "001-add-a-notes-api"], { root: dir });
+}
 
-  const jobPath = path.join(dir, "factory", "jobs", "001-add-a-notes-api", "job.json");
-  const setStatus = (status) => {
-    const job = JSON.parse(fs.readFileSync(jobPath, "utf8"));
-    job.status = status;
-    fs.writeFileSync(jobPath, `${JSON.stringify(job, null, 2)}\n`);
-  };
+test("set-status walks the pipeline and accept closes a ui-checked job", () => {
+  const dir = makeWorkspace();
+  briefJob(dir);
 
-  setStatus("tested");
-  assert.match(run(["status"], { root: dir }), /next: security/);
-  setStatus("secured");
-  assert.match(run(["status"], { root: dir }), /next: ui/);
-  setStatus("ui-checked");
-  assert.match(run(["status"], { root: dir }), /next: grokbot \(manager\)/);
+  const built = run(["set-status", "built", "001"], { root: dir });
+  assert.match(built, /Job 001-add-a-notes-api status is built\./);
+  assert.match(built, /next: tester/);
+  assert.equal(readJobFile(dir, "001-add-a-notes-api").status, "built");
+
+  assert.match(run(["set-status", "tested", "001-add-a-notes-api"], { root: dir }), /next: security/);
+  assert.match(run(["set-status", "secured", "001-add-a-notes-api"], { root: dir }), /next: ui/);
+  assert.match(run(["set-status", "ui-checked", "001-add-a-notes-api"], { root: dir }), /next: grokbot \(manager\)/);
+
+  const accepted = run(["accept", "001-add-a-notes-api"], { root: dir });
+  assert.match(accepted, /Job 001-add-a-notes-api is accepted\./);
+  const status = run(["status"], { root: dir });
+  assert.match(status, /\[accepted\]/);
+  assert.match(status, /done/);
+  assert.equal(readJobFile(dir, "001-add-a-notes-api").status, "accepted");
+});
+
+test("set-status sends failures and change requests back to the builder", () => {
+  const dir = makeWorkspace();
+  briefJob(dir);
+  run(["set-status", "built", "001-add-a-notes-api"], { root: dir });
+
+  assert.match(run(["set-status", "test-failed", "001-add-a-notes-api"], { root: dir }), /next: builder/);
+  assert.match(run(["set-status", "built", "001-add-a-notes-api"], { root: dir }), /next: tester/);
+  run(["set-status", "tested", "001-add-a-notes-api"], { root: dir });
+  assert.match(run(["set-status", "security-failed", "001-add-a-notes-api"], { root: dir }), /next: builder/);
+  run(["set-status", "built", "001-add-a-notes-api"], { root: dir });
+  run(["set-status", "tested", "001-add-a-notes-api"], { root: dir });
+  run(["set-status", "secured", "001-add-a-notes-api"], { root: dir });
+  assert.match(run(["set-status", "ui-failed", "001-add-a-notes-api"], { root: dir }), /next: builder/);
+  run(["set-status", "built", "001-add-a-notes-api"], { root: dir });
+  run(["set-status", "tested", "001-add-a-notes-api"], { root: dir });
+  run(["set-status", "secured", "001-add-a-notes-api"], { root: dir });
+  run(["set-status", "ui-checked", "001-add-a-notes-api"], { root: dir });
+  assert.match(run(["set-status", "changes-requested", "001-add-a-notes-api"], { root: dir }), /next: builder/);
+  assert.throws(() => run(["accept", "001-add-a-notes-api"], { root: dir }), /Status must be ui-checked/);
+});
+
+test("set-status and accept reject missing jobs and illegal moves", () => {
+  const dir = makeWorkspace();
+  assert.throws(() => run(["set-status", "built"], { root: dir }), /No job found/);
+  assert.throws(() => run(["accept"], { root: dir }), /No job found/);
+
+  briefJob(dir);
+  assert.throws(() => run(["set-status"], { root: dir }), /Unknown status ""/);
+  assert.throws(
+    () => run(["set-status", "shipped", "001-add-a-notes-api"], { root: dir }),
+    /Unknown status "shipped"/,
+  );
+  assert.throws(
+    () => run(["set-status", "accepted", "001-add-a-notes-api"], { root: dir }),
+    /npm start -- accept/,
+  );
+  assert.throws(() => run(["set-status", "briefed", "001-add-a-notes-api"], { root: dir }), /npm start -- ready/);
+  assert.throws(() => run(["set-status", "draft", "001-add-a-notes-api"], { root: dir }), /new-job/);
+  assert.throws(
+    () => run(["set-status", "secured", "001-add-a-notes-api"], { root: dir }),
+    /Cannot set 001-add-a-notes-api to secured from briefed\. From briefed you can set: built, changes-requested\./,
+  );
+  assert.throws(() => run(["accept", "001-add-a-notes-api"], { root: dir }), /Status must be ui-checked/);
 });
 
 test("unknown command and missing job fail clearly", () => {
