@@ -2,6 +2,12 @@
 
 Filled by a Grok bot (manager), or by Beau until Grok bot is running. Cursor agents do not write this file.
 
+## Product repository
+
+https://cursor.com/codebase/beau-cunningham/tmp-9883dbb9b4ecf3e0
+
+Default for hunting companion work. Cursor workers must be launched against this product repository, not SoftwareFactory, unless this brief says otherwise.
+
 ## What to build
 
 _What should exist when the workers are done?_

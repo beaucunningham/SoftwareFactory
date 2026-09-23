@@ -26,6 +26,19 @@ Beau → Grok bot → brief → builder → tester → security → ui → Grok 
 
 Cursor agents do not plan the product, do research, or approve releases.
 
+## Two repositories
+
+| Repo | Holds |
+| --- | --- |
+| **SoftwareFactory** (this GitHub repo) | Tickets, briefs, and the CLI |
+| **Hunting companion** on Cursor Origin | Product code |
+
+Product repository: https://cursor.com/codebase/beau-cunningham/tmp-9883dbb9b4ecf3e0
+
+Also known as `beau-cunningham/tmp-9883dbb9b4ecf3e0`. The name is hunting companion (name TBD). See `factory/PRODUCT.md`.
+
+`factory/config.json` is plain JSON, so it has no comments. The `productRepo` field is the Origin URL above. Grok bots read it and launch builder, tester, security, and ui Cloud Agents there. They write briefs in `factory/jobs/<id>/` in this repo. This GitHub repo is public, so those briefs must not contain secrets.
+
 ## Getting started
 
 **Requirements:** [Node.js](https://nodejs.org/) 20. The CLI has no dependencies.
@@ -53,7 +66,11 @@ npm test
    npm start -- ready <id>
    ```
 
-3. Launch Cursor workers from [cursor.com/agents](https://cursor.com/agents). Paste the prompt from each command, in order. Each worker records its own status before it stops:
+3. Start each Cursor worker on the product repo, not in SoftwareFactory:
+
+   https://cursor.com/codebase/beau-cunningham/tmp-9883dbb9b4ecf3e0
+
+   Open that Cloud Agent from [cursor.com/agents](https://cursor.com/agents). Paste the prompt from each command, in order, and include the brief at `factory/jobs/<id>/brief.md` (the path in this repo, or the brief content). Each worker records its own status before it stops:
 
    ```bash
    npm start -- prompt builder <id>
@@ -62,7 +79,7 @@ npm test
    npm start -- prompt ui <id>
    ```
 
-   Or start one parent Cursor agent and tell it to follow `.cursor/skills/run-factory/SKILL.md` after the brief is ready.
+   Order is builder, then tester, then security, then ui. A parent Cursor agent can follow `.cursor/skills/run-factory/SKILL.md` after the brief is ready. That agent still runs on the product repo with the brief from `factory/jobs/<id>/`.
 
 4. Check progress, then accept or send the job back:
 
@@ -85,8 +102,10 @@ npm start -- help
 .cursor/agents/           Cursor workers: builder, tester, security, ui
 .cursor/rules/            Worker quality and pipeline rules
 .github/workflows/        npm test on pull requests and main
+factory/config.json       productRepo Origin URL for worker Cloud Agents
+factory/PRODUCT.md        Product name and Origin link
 factory/managers/         Grok bot manager guide
-factory/jobs/             Briefs and worker artifacts (empty until the first job)
+factory/jobs/             Briefs and worker artifacts (empty until the first job; no secrets)
 factory/templates/        Brief template copied by new-job
 src/                      Factory CLI
 AGENTS.md                 Operating guide

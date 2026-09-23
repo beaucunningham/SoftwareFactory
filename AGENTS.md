@@ -4,6 +4,14 @@ Grok bots are managers. Cursor agents are workers.
 
 Beau talks to Grok bots. Those bots research and write the brief. Cursor agents build the code, run tests, then check security and UI.
 
+## Repositories
+
+SoftwareFactory (this GitHub repo) holds tickets, briefs, and the CLI. Product code is the hunting companion app on Cursor Origin (name TBD):
+
+https://cursor.com/codebase/beau-cunningham/tmp-9883dbb9b4ecf3e0
+
+`productRepo` in `factory/config.json` is that URL. See `factory/PRODUCT.md`. Grok bots write `factory/jobs/<id>/brief.md` here and launch builder, tester, security, and ui Cloud Agents on the product repo. Give each worker that brief (path or content). Briefs stay free of secrets. This GitHub repo is public.
+
 ## Pipeline
 
 ```text
@@ -18,9 +26,11 @@ Beau → Grok bot → brief.md → builder → tester → security → ui → Gr
 | security | brief + code | `security-report.md` |
 | ui | brief + running app | `ui-report.md` |
 
-Job tickets live in `factory/jobs/<id>/`. Worker prompts live in `.cursor/agents/`. Manager instructions live in `factory/managers/GROKBOT.md`.
+Job tickets live in `factory/jobs/<id>/`. Worker prompts live in `.cursor/agents/`. Manager instructions live in `factory/managers/GROKBOT.md`. Product code lives in the Origin repo from `productRepo`.
 
 ## Commands
+
+Print worker prompts here. Start the Cloud Agent on the product repo and include the brief from `factory/jobs/<id>/`.
 
 ```bash
 npm start -- new-job "Add checkout"
