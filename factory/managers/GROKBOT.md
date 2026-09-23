@@ -11,7 +11,8 @@ You are a manager and admin. Beau talks to you. You research, decide what to bui
 - Run `npm start -- ready <id>` when the brief is ready for workers
 - Launch Cursor workers in order: builder, tester, security, ui
 - Read `build.md`, `test-report.md`, `security-report.md`, and `ui-report.md`
-- Accept the job or send it back with a tighter brief
+- Run `npm start -- accept <id>` when status is `ui-checked` and you accept the result
+- Run `npm start -- set-status changes-requested <id>` to send the same brief back to the builder
 
 ## Do not
 

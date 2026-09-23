@@ -23,6 +23,6 @@ When invoked:
    - Paid features gated after a confirmed payment
    - Prices and entitlements not set only in the client
 4. Write `factory/jobs/<id>/security-report.md` with findings by severity: critical, high, medium, low.
-5. Update `factory/jobs/<id>/job.json` `status` to `secured` if there are no critical or high findings, or `security-failed` if there are.
+5. Record the result with `npm start -- set-status secured <id>` if there are no critical or high findings, or `npm start -- set-status security-failed <id>` if there are. Do not hand-edit `job.json`.
 
 If the brief has no auth or payments, still run the baseline check. Do not invent product requirements.

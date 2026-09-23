@@ -26,12 +26,19 @@ Job tickets live in `factory/jobs/<id>/`. Worker prompts live in `.cursor/agents
 npm start -- new-job "Add checkout"
 npm start -- ready 001-add-checkout
 npm start -- prompt builder 001-add-checkout
+npm start -- set-status built 001-add-checkout
 npm start -- prompt tester 001-add-checkout
+npm start -- set-status tested 001-add-checkout
 npm start -- prompt security 001-add-checkout
+npm start -- set-status secured 001-add-checkout
 npm start -- prompt ui 001-add-checkout
+npm start -- set-status ui-checked 001-add-checkout
+npm start -- accept 001-add-checkout
 npm start -- status
 npm test
 ```
+
+`set-status` is how workers record a result. `accept` is the manager close, and it only works from `ui-checked`. On a failed check, set `test-failed`, `security-failed`, `ui-failed`, or `changes-requested` instead of the passing status.
 
 ## Worker rules
 

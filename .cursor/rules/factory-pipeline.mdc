@@ -9,3 +9,4 @@ alwaysApply: true
 - If the brief is missing or unclear, stop and send it back to the Grok bot. Do not guess.
 - After `test-failed`, `security-failed`, `ui-failed`, or `changes-requested`, the builder implements the existing brief unless a Grok bot updated it.
 - `security` and `ui` report only. They do not rewrite the feature.
+- Workers record status with `npm start -- set-status <status> <id>`. Only a Grok bot runs `npm start -- accept <id>`.

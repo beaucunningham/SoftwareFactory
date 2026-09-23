@@ -82,6 +82,15 @@ function isBriefReady(brief) {
   return hasCriteria && !stillTemplate && brief.trim().length > 80;
 }
 
+function setJobStatus(root, jobId, status) {
+  const job = findJob(root, jobId);
+  if (!job) {
+    throw new Error("No job found. Create one with: npm start -- new-job \"Your idea\"");
+  }
+
+  return writeJob(root, { ...job, status });
+}
+
 function markReady(root, jobId) {
   const job = findJob(root, jobId);
   if (!job) {
@@ -132,5 +141,6 @@ module.exports = {
   listJobs,
   markReady,
   nextJobNumber,
+  setJobStatus,
   slugify,
 };

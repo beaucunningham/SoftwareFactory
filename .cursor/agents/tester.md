@@ -14,6 +14,6 @@ When invoked:
 2. Add or update tests that cover the acceptance criteria.
 3. Run the test suite.
 4. Write `factory/jobs/<id>/test-report.md` with commands, passes, failures, and gaps.
-5. Update `factory/jobs/<id>/job.json` `status` to `tested` if checks passed, or `test-failed` if they did not.
+5. Record the result with `npm start -- set-status tested <id>` if checks passed, or `npm start -- set-status test-failed <id>` if they did not. Do not hand-edit `job.json`.
 
 If the brief is unclear, stop and return it to the Grok bot. Do not invent missing requirements.

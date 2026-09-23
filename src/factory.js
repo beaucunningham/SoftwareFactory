@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 // fs is used by loadConfig
 
-const { createJob, findJob, listJobs, markReady } = require("./jobs");
+const { createJob, findJob, listJobs, markReady, setJobStatus } = require("./jobs");
 const { loadRoles } = require("./roles");
 
 function loadConfig(root) {
@@ -73,18 +73,102 @@ function buildPrompt(role, job, config) {
   ].join("\n");
 }
 
+// Who may move a job to each status. draft comes from new-job, briefed from ready, accepted from accept.
+const STATUS_SOURCES = {
+  built: ["briefed", "test-failed", "security-failed", "ui-failed", "changes-requested"],
+  tested: ["built"],
+  "test-failed": ["built"],
+  secured: ["tested"],
+  "security-failed": ["tested"],
+  "ui-checked": ["secured"],
+  "ui-failed": ["secured"],
+  "changes-requested": [
+    "briefed",
+    "built",
+    "tested",
+    "test-failed",
+    "secured",
+    "security-failed",
+    "ui-checked",
+    "ui-failed",
+  ],
+};
+
+function knownStatuses(config) {
+  return Object.keys(config.statuses);
+}
+
+function targetsFrom(status) {
+  return Object.entries(STATUS_SOURCES)
+    .filter(([, sources]) => sources.includes(status))
+    .map(([target]) => target);
+}
+
+function requireJob(root, jobId) {
+  const job = findJob(root, jobId);
+  if (!job) {
+    throw new Error("No job found. Create one with: npm start -- new-job \"Your idea\"");
+  }
+  return job;
+}
+
+function setStatus(root, status, jobId, config) {
+  if (!status || !Object.prototype.hasOwnProperty.call(config.statuses, status)) {
+    throw new Error(
+      `Unknown status "${status || ""}". Known statuses: ${knownStatuses(config).join(", ")}`,
+    );
+  }
+  if (status === "accepted") {
+    throw new Error("Accepted is a manager decision. Run: npm start -- accept [job-id]");
+  }
+  if (status === "draft") {
+    throw new Error("draft is set by new-job.");
+  }
+  if (status === "briefed") {
+    throw new Error("Use ready to mark a brief finished. Run: npm start -- ready [job-id]");
+  }
+
+  const job = requireJob(root, jobId);
+  const sources = STATUS_SOURCES[status];
+  if (!sources || !sources.includes(job.status)) {
+    const allowed = targetsFrom(job.status);
+    const hint = allowed.length > 0 ? allowed.join(", ") : "none";
+    throw new Error(
+      `Cannot set ${job.id} to ${status} from ${job.status}. From ${job.status} you can set: ${hint}.`,
+    );
+  }
+
+  const next = setJobStatus(root, job.id, status);
+  return [`Job ${next.id} status is ${next.status}.`, formatNext(nextRole(config, next.status))].join("\n");
+}
+
+function acceptJob(root, jobId) {
+  const job = requireJob(root, jobId);
+  if (job.status !== "ui-checked") {
+    throw new Error(`Cannot accept ${job.id} from ${job.status}. Status must be ui-checked.`);
+  }
+
+  const next = setJobStatus(root, job.id, "accepted");
+  return `Job ${next.id} is accepted.`;
+}
+
 function helpText() {
   return [
     "SoftwareFactory — Grok bots manage. Cursor agents build, test, and check.",
+    "",
+    "You start every step by hand.",
     "",
     "Usage:",
     "  npm start -- roles",
     "  npm start -- new-job \"Add a notes API\"",
     "  npm start -- ready [job-id]",
+    "  npm start -- set-status <status> [job-id]",
+    "  npm start -- accept [job-id]",
     "  npm start -- status",
     "  npm start -- prompt <builder|tester|security|ui> [job-id]",
     "",
     "Pipeline: grokbot → builder → tester → security → ui → grokbot",
+    "Workers record status with set-status. A Grok bot accepts from ui-checked.",
   ].join("\n");
 }
 
@@ -121,6 +205,15 @@ function run(args, options = {}) {
 
   if (command === "status") {
     return formatStatus(listJobs(root), config);
+  }
+
+  if (command === "set-status") {
+    const [status, jobId] = rest;
+    return setStatus(root, status, jobId, config);
+  }
+
+  if (command === "accept") {
+    return acceptJob(root, rest[0]);
   }
 
   if (command === "prompt") {
@@ -162,4 +255,4 @@ function main(args, options = {}) {
   }
 }
 
-module.exports = { buildPrompt, helpText, main, nextRole, run };
+module.exports = { acceptJob, buildPrompt, helpText, main, nextRole, run, setStatus };

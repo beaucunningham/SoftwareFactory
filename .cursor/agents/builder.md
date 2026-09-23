@@ -15,6 +15,6 @@ When invoked:
 3. Prefer existing patterns in this repo. Do not add frameworks, dependencies, or abstractions unless the brief requires them.
 4. Run the relevant tests and fix failures you caused.
 5. Write `factory/jobs/<id>/build.md` with what changed and how to verify it.
-6. Update `factory/jobs/<id>/job.json` `status` to `built`.
+6. Record the result with `npm start -- set-status built <id>`. Do not hand-edit `job.json`.
 
 Do not mark the job accepted. That is the Grok bot's job.

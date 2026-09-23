@@ -19,4 +19,6 @@ Use this when a Grok bot (or Beau) has a ready job brief and Cursor should build
 8. If status is `ui-failed`, send the UI report back to the builder, then tester, security, and ui again.
 9. Stop when status is `ui-checked` or when the brief is unclear. Hand the ticket back to the Grok bot.
 
+Workers record status with `npm start -- set-status <status> <id>`. Read it back with `npm start -- status`. The Grok bot accepts with `npm start -- accept <id>`, or sends the job back with `npm start -- set-status changes-requested <id>`.
+
 Do not plan the product. Do not accept the release.
