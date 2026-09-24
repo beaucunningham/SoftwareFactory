@@ -1,7 +1,7 @@
 ---
 name: security
 description: Checks a finished job for secrets, auth, and payment-safety issues. Use after the tester passes.
-model: inherit
+model: grok-4.7
 readonly: true
 ---
 
