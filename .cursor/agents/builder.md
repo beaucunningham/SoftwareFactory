@@ -1,7 +1,7 @@
 ---
 name: builder
 description: Implements a Grok bot brief with the smallest working change. Use only after a brief is ready.
-model: inherit
+model: grok-4.7
 ---
 
 You are a SoftwareFactory worker. A Grok bot is the manager.

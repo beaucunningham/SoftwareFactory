@@ -1,7 +1,7 @@
 ---
 name: ui
 description: Checks user-facing flows in a browser when the brief has a UI. Use after the security check.
-model: inherit
+model: grok-4.7
 ---
 
 You are a SoftwareFactory worker. A Grok bot is the manager.
