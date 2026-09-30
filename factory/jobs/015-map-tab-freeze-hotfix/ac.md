@@ -2,7 +2,7 @@
 
 Owner: Sage · Implement: Kai / SoftwareFactory · iOS Sim: Lane
 
-Copy of `AC_MAP_TAB_FREEZE_HOTFIX_v0.md`. No secrets. **Status: FINAL, approved to build.** Beau's go came via Finley on 2026-09-30 at 4:01 PM CT. **URGENT hotfix.** Weather and wind stay stubs (no live feed, no keys, no spend). Sun and shooting-light times stay on-device; the 013 shooting-light table and copy don't change. **The AI's user-facing name stays Scout.** Bar is **Map | Pins | Forecast | Scout**. Dark default, `#BF5700` accent only, pin style A. USGS topo stays approved. User-facing word is **pin**. **All existing tests stay green.** Sage recorded 274 at the 014 H4 tip. The factory accept note recorded 277 at final H4 tip `143cc53b171856a8c09fbaae16a07fd2949d7495`. The builder records the count on base `3903bb27c2a869926c7d8935dbf55ce35f20514a` before and after. **No new dependencies.** No secrets, no API keys, no spend, no proxy.
+Copy of `AC_MAP_TAB_FREEZE_HOTFIX_v0.md`, updated by **Delta 2026-09-30 4:06 PM CT** (Beau via Finley). No secrets. **Status: FINAL, approved to build.** Beau's go came via Finley on 2026-09-30 at 4:01 PM CT. **URGENT hotfix.** Sometimes the Map tab button has to be tapped twice before the map shows (likely the same root cause as the freeze). **A single tap on the Map tab always shows the map, including after switching from every other tab 10 times.** The regression test covers it. Lane's Simulator steps include it. Weather and wind stay stubs (no live feed, no keys, no spend). Sun and shooting-light times stay on-device; the 013 shooting-light table and copy don't change. **The AI's user-facing name stays Scout.** Bar is **Map | Pins | Forecast | Scout**. Dark default, `#BF5700` accent only, pin style A. USGS topo stays approved. User-facing word is **pin**. **All existing tests stay green.** Sage recorded 274 at the 014 H4 tip. The factory accept note recorded 277 at final H4 tip `143cc53b171856a8c09fbaae16a07fd2949d7495`. The builder records the count on base `3903bb27c2a869926c7d8935dbf55ce35f20514a` before and after. **No new dependencies.** No secrets, no API keys, no spend, no proxy.
 
 **Job id:** `015-map-tab-freeze-hotfix`  
 **Builds on:** Job 014 at Origin main `3903bb27c2a869926c7d8935dbf55ce35f20514a` (Job 014 landed)  
@@ -26,12 +26,13 @@ Lane captures the shots and recordings listed at the end of this file. Those scr
    2. An animation or style interpolator overridden on one route only, so Map and the other tabs are out of sync and the outgoing scene stays mounted above Map.
    3. A native MapView layer or JS thread stall when the Map scene re-appears (focus effects, wind layer, region-clean, H4 parcels tiles). Ruled out with a profiler or trace.
    4. H1 glass remount logic loops on focus (re-render storm).
-1.3. A regression test (navigator/transition unit or integration test) **fails on `3903bb2` and passes with the fix**. If a true UI freeze can't be unit tested, the test asserts that the condition causing it is gone (transition config for Map, scene reaching its settled/focused state, no leftover overlay or `pointerEvents` block). The PR explains the gap.
+1.3. A regression test (navigator/transition unit or integration test) **fails on `3903bb2` and passes with the fix**. It covers the double-tap symptom: **one tap on the Map tab shows the map**, including after switching from every other tab (Pins, Forecast, Scout) 10 times. A second tap is not required. If a true UI freeze can't be unit tested, the test asserts that the condition causing it is gone (transition config for Map, scene reaching its settled/focused state on the first tap, no leftover overlay or `pointerEvents` block). The PR explains the gap.
 1.4. Preferred fix when it matches the cause: remove the fade from the Map tab (animation `none` for Map, or `shift`/none consistently for all tabs). Not a new per-scene opacity hack. The glass stays protected by a guard that does not depend on opacity (glass view kept mounted; re-key on focus only if still needed).
 
 ### 2. Tab switching (AC B) — Lane, iOS Simulator, fresh install and existing install
 
-2.1. From each tab (Pins, Forecast, Scout) tap Map. The transition completes within about 300ms with no hang or half-drawn frame.
+2.1. From each tab (Pins, Forecast, Scout) tap Map **once**. The map shows on that single tap. The transition completes within about 300ms with no hang or half-drawn frame. A second tap is never required.
+2.1a. After switching from every other tab 10 times, a single tap on the Map tab still shows the map.
 2.2. After each switch the map pans, pinch-zooms, and a pin tap opens its popup/detail.
 2.3. Stress: cycle Map → Pins → Map → Forecast → Map → Scout → Map ten times quickly. No freeze, and 2.2 still passes at the end.
 2.4. Also with Wind on, Property lines on, Topo, Satellite, and Standard styles, and with the shooting-light popover opened and closed before switching.
@@ -40,7 +41,7 @@ Lane captures the shots and recordings listed at the end of this file. Those scr
 
 ### 3. No H1 regression, sun-times glass (AC C)
 
-3.1. The glass/blur behind the sunrise/sunset stack is visible after every switch in 2.1–2.6.
+3.1. The glass/blur behind the sunrise/sunset stack is visible after every switch in 2.1–2.6, including the single-tap returns in 2.1 and 2.1a.
 3.2. The H1 regression test from PR #18 still passes, or is replaced by an equivalent that still guards the glass.
 3.3. The popover still works: countdown, colors, and game selector.
 
@@ -52,7 +53,7 @@ Lane captures the shots and recordings listed at the end of this file. Those scr
 ### 5. Guardrails (AC E)
 
 5.1. All existing tests pass. Sage recorded 274 at the 014 H4 tip; the factory accept note recorded 277 at final H4 tip `143cc53`. The builder records the count on `3903bb27c2a869926c7d8935dbf55ce35f20514a` before and after. No new dependencies. Nothing outside this scope changes.
-5.2. The product PR includes the exact Simulator steps for sections 2–4 so Lane can confirm on device.
+5.2. The product PR includes the exact Simulator steps for sections 2–4 so Lane can confirm on device, including a single tap on the Map tab after switching from every other tab 10 times.
 
 ### 6. Regression (008–014)
 
@@ -73,6 +74,8 @@ Every existing test on `3903bb27c2a869926c7d8935dbf55ce35f20514a` stays green, p
 
 - The root cause is missing, or it does not cite the file and lines, or it does not say whether 014 H1 (PR #18) caused it
 - There is no regression test that fails on `3903bb2` and passes with the fix, and the PR does not explain the gap
+- The regression test does not cover a single tap showing the map after switching from every other tab 10 times
+- The Map tab needs a second tap before the map shows, including after switching from Pins, Forecast, or Scout 10 times
 - Returning to Map from Pins, Forecast, Scout, the You menu, or pin/hunt detail hangs, freezes mid-transition, or leaves the map unable to pan, zoom, or open a pin
 - The ten-cycle stress path freezes, or the map fails pan/zoom/pin tap at the end
 - The same freeze shows up with Wind on, Property lines on, Topo, Satellite, or Standard, after the shooting-light popover, or after background/foreground
@@ -87,8 +90,9 @@ Every existing test on `3903bb27c2a869926c7d8935dbf55ce35f20514a` stays green, p
 
 Setup: clean build of the product PR; iPhone SE (3rd gen) and a Pro Max Simulator; fresh install and an existing install; signed in with pins on the map; dark mode. Run once with Wind off and Property lines off, and once with Wind on, Property lines on, and each of Topo, Satellite, and Standard.
 
-1. From Pins, tap Map. Transition completes within about 300ms. No hang, no half-drawn frame. Pan, pinch-zoom, tap a pin: popup opens. Glass behind the sun stack is visible.
-2. Same from Forecast. Same from Scout.
+1. From Pins, tap Map **once**. The map shows on that tap. Do not tap Map again. Transition completes within about 300ms. No hang, no half-drawn frame. Pan, pinch-zoom, tap a pin: popup opens. Glass behind the sun stack is visible.
+2. Same from Forecast. Same from Scout. One tap each. The map shows each time.
+2a. From each other tab, switch away and back to Map 10 times, one tap on Map each time. Every one of those taps shows the map. No second tap.
 3. Open the shooting-light popover, then close it. Switch to Pins and back to Map. Glass, countdown, colors, and game selector still work. Map still pans, zooms, and opens a pin.
 4. Cycle Map → Pins → Map → Forecast → Map → Scout → Map ten times quickly. Then pan, pinch-zoom, and pin tap. No freeze.
 5. Open the You/hamburger menu and return to Map. Open pin detail and hunt detail and return to Map. No freeze. Map still interactive. Glass still visible.
@@ -96,6 +100,6 @@ Setup: clean build of the product PR; iPhone SE (3rd gen) and a Pro Max Simulato
 7. Repeat a short pass on bright Satellite (for example West Texas sand, ≈ 31.9, −102.3) and confirm the sun-stack glass is still there.
 8. Launch the app after the Expo bump. Confirm it reaches Map.
 
-Lane captures: a recording of steps 1–6 (both phone sizes, fresh and existing install, including the ten-cycle stress and one pass with Wind, Property lines, and each map style); stills of the sun-times glass after those switches, including bright Satellite, plus the popover; a launch still after the Expo bump; test output all green.
+Lane captures: a recording of steps 1–6, including step 2a (one tap from every other tab, 10 times each), on both phone sizes, fresh and existing install, plus the ten-cycle stress and one pass with Wind, Property lines, and each map style; stills of the sun-times glass after those switches, including bright Satellite, plus the popover; a launch still after the Expo bump; test output all green.
 
 UI-check screenshots stay out of the product repo. Only the UI report markdown goes in the product repo. See `note.md`.

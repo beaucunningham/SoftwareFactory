@@ -12,13 +12,15 @@ Filled by Sage (Product) for Finley → Kai / SoftwareFactory. Workers do not in
 
 Beau's go came via Finley on 2026-09-30 at 4:01 PM CT. Status: **FINAL, approved to build.** **URGENT hotfix.** Hand straight to Kai. **The AI's user-facing name stays Scout.** **USGS The National Map `USGSTopo` tiles stay approved.** Weather and wind stay stubs, with no keys or spend. This brief is approved and final for Kai. No open Decisions for Beau.
 
+**Delta 2026-09-30 4:06 PM CT (Beau via Finley).** Sometimes the Map tab button has to be tapped twice before the map shows. Likely the same root cause as the freeze; verify that, and do not assume a second bug. **A single tap on the Map tab always shows the map, including after switching from every other tab 10 times.** The regression test covers it. Lane's Simulator steps include it.
+
 Chrome north star: Job 003/006–014 quiet field tool: dark by default, calm neutrals, burnt orange `#BF5700` for accents only, pin style A. This job does not restyle chrome.
 
 ## What to build
 
 Priority order. Keep this scope exactly. **One product PR.** Nothing else.
 
-1. **Map tab freeze when returning to Map from any tab.** Beau, iOS Simulator, main `3903bb2`: returning to the **Map** (home) tab from ANY other tab (Pins, Forecast, Scout, and You/menu screens if reachable) freezes partway through the tab transition. After that the map is unusable (no pan, no zoom, no tap). Find the real root cause first (likely a regression from 014 H1, Origin PR #18; **verify, do not assume**). Add a regression test that **fails on `3903bb2` before the fix and passes after**. The transition back to Map completes smoothly and the map is fully interactive. The 014 H1 sun-times glass does not regress.
+1. **Map tab freeze when returning to Map from any tab.** Beau, iOS Simulator, main `3903bb2`: returning to the **Map** (home) tab from ANY other tab (Pins, Forecast, Scout, and You/menu screens if reachable) freezes partway through the tab transition. After that the map is unusable (no pan, no zoom, no tap). The same session (Beau via Finley, 2026-09-30 4:06 PM CT): sometimes the Map tab button has to be tapped twice before the map shows. Treat that as the same root cause unless the trace shows otherwise. Find the real root cause first (likely a regression from 014 H1, Origin PR #18; **verify, do not assume**). Add a regression test that **fails on `3903bb2` before the fix and passes after**, and that covers a single tap showing the map, including after switching from every other tab 10 times. The transition back to Map completes smoothly, **one tap on the Map tab always shows the map**, and the map is fully interactive. The 014 H1 sun-times glass does not regress.
 2. **Expo patch bump.** `expo` ~57.0.26, `expo-constants` ~57.0.20, `expo-router` ~57.0.24. Align with `npx expo install --fix` style. Lockfile updated. Note any peer warnings in the product PR.
 
 **Bar order stays: Map | Pins | Forecast | Scout.** Map stays the default home. The top-right three-line You menu is unchanged.
@@ -30,7 +32,7 @@ Everything else from Jobs 005–014 stays the same. **Weather and wind data stay
 ## Build order
 
 1. Trace the tab navigator and transition path. Rule the suspects in or out with evidence. Write the root cause before changing behavior.
-2. Add the regression test so it fails on `3903bb2` and passes with the fix. If a true UI freeze cannot be unit tested, the test asserts that the condition causing it is gone, and the PR explains the gap.
+2. Add the regression test so it fails on `3903bb2` and passes with the fix. It must cover a single tap on the Map tab showing the map, including after switching from every other tab 10 times. If a true UI freeze cannot be unit tested, the test asserts that the condition causing it is gone (including a first tap that does not settle on Map), and the PR explains the gap.
 3. Fix the freeze. Preferred direction is below. Keep the sun-times glass intact.
 4. Expo patch bump in its own commit if that keeps the diff readable. Lockfile updated. Peer warnings noted in the PR.
 5. Run the full existing suite plus the new test, and the 008–014 regression checklist, before hand-off to Lane.
@@ -51,6 +53,8 @@ Cloud builders run on Linux and **cannot run the iOS Simulator**. The builder do
 
 **Symptom (Beau, iOS Simulator, main `3903bb2`, 2026-09-30):** returning to the **Map** (home) tab from ANY other tab freezes partway through the tab transition. Pins, Forecast, Scout, and You/menu screens if those screens are reachable, all do it. After the freeze the map is unusable: no pan, no zoom, no tap.
 
+**Same bug, second symptom (Beau via Finley, 2026-09-30 4:06 PM CT):** sometimes the Map tab button has to be tapped twice before the map shows. Likely the same root cause as the freeze. A single tap on the Map tab always shows the map, including after switching from every other tab (Pins, Forecast, Scout) 10 times.
+
 **Recorded 014 H1 fix (verify; do not treat this note as the cause until the code says so).** Origin PR #18 (`cursor/h1-sun-stack-glass-8299`, tip `222154e2c0bd987b3468a34dcc0b78709ac5c2c2`). Factory accept note: the Map tab used `animation: 'fade'`, so expo-router's `forFade` took the scene's opacity through 0. `expo-glass-effect` 57.0.4 `GlassView.swift` skips the glass at low opacity and reinstalls it only while the view is unmounted. The fix keeps the Map scene at opacity 1 (`mapSceneStyle`). Map Tools slides instead of fading. A 0.12 floor tint is backup only. The 014 UI check saw the Map scene stay at opacity 1 through the tab crossfade while other tabs still fade.
 
 **Suspects (builder confirms with evidence, not guesses):**
@@ -62,10 +66,11 @@ Cloud builders run on Linux and **cannot run the iOS Simulator**. The builder do
 
 **Fix direction.** Find the real root cause first. Preferred fix: remove the fade from the Map tab entirely (animation `none` for Map, or `shift`/none consistently for all tabs), not per-scene opacity hacks. Keep the glass protected with a guard that doesn't depend on opacity, for example keep the glass view mounted and re-key it on focus only if still needed. The fix must keep **both**:
 
-- smooth tab switches back to Map with the map fully interactive, and
+- smooth tab switches back to Map with the map fully interactive,
+- a single tap on the Map tab always shows the map, including after switching from every other tab 10 times, and
 - the sun-times glass intact (no H1 regression).
 
-**Tests to add:** a navigator/transition unit or integration test that **fails on `3903bb2` and passes with the fix**. If a true UI freeze can't be unit tested, the test asserts that the condition causing it is gone (transition config for Map, scene reaching its settled/focused state, no leftover overlay or `pointerEvents` block). The PR explains that gap. The H1 regression test from PR #18 still passes, or is replaced by an equivalent that still guards the glass.
+**Tests to add:** a navigator/transition unit or integration test that **fails on `3903bb2` and passes with the fix**. The same test covers the double-tap symptom: one tap on the Map tab shows the map (the Map scene is settled and visible), including after switching from every other tab 10 times. A second tap must not be required. If a true UI freeze can't be unit tested, the test asserts that the condition causing it is gone (transition config for Map, scene reaching its settled/focused state on the first tap, no leftover overlay or `pointerEvents` block). The PR explains that gap. The H1 regression test from PR #18 still passes, or is replaced by an equivalent that still guards the glass.
 
 ## 2. Expo patch bump
 
@@ -95,12 +100,13 @@ Full checklist, fail conditions, and the Simulator sweep are in `ac.md`. Summary
 
 - [ ] The product PR states the root cause in plain words, citing the exact file and lines, and says whether it came from 014 H1 (PR #18) or elsewhere
 - [ ] Each suspect above is ruled in or out with evidence
-- [ ] A regression test fails on `3903bb2` and passes with the fix. If a true UI freeze can't be unit tested, the test asserts the causing condition is gone, and the PR explains the gap
+- [ ] A regression test fails on `3903bb2` and passes with the fix. It covers a single tap on the Map tab showing the map, including after switching from every other tab 10 times. If a true UI freeze can't be unit tested, the test asserts the causing condition is gone, and the PR explains the gap
 - [ ] Preferred fix when it matches the cause: Map fade removed (`none`, or `shift`/none for all tabs), not a new per-scene opacity hack. Glass stays protected by a guard that does not depend on opacity
 
 ### 2. Tab switching (Lane, iOS Simulator, fresh install and existing install)
 
-- [ ] From each tab (Pins, Forecast, Scout) tap Map. The transition completes within about 300ms with no hang or half-drawn frame
+- [ ] From each tab (Pins, Forecast, Scout) tap Map **once**. The map shows on that single tap. The transition completes within about 300ms with no hang or half-drawn frame. A second tap is never required
+- [ ] After switching from every other tab 10 times, a single tap on the Map tab still shows the map
 - [ ] After each switch the map pans, pinch-zooms, and a pin tap opens its popup/detail
 - [ ] Stress: cycle Map → Pins → Map → Forecast → Map → Scout → Map ten times quickly. No freeze, and the map is still fully interactive at the end
 - [ ] Also with Wind on, Property lines on, Topo, Satellite, and Standard, and with the shooting-light popover opened and closed before switching
@@ -150,8 +156,9 @@ Full checklist, fail conditions, and the Simulator sweep are in `ac.md`. Summary
 
 ## User-facing UI
 
-Coming back to the map from any other tab finishes the switch, and the map still pans, zooms, and opens a pin. The sunrise/sunset glass is still there after every switch. The Expo bump does not change the screens. Lane confirms both on the iOS Simulator, on a fresh install and on an existing install.
+Coming back to the map is one tap. The switch finishes, and the map still pans, zooms, and opens a pin. The sunrise/sunset glass is still there after every switch. The Expo bump does not change the screens. Lane confirms both on the iOS Simulator, on a fresh install and on an existing install.
 
+- One tap on the Map tab always shows the map, including after switching from Pins, Forecast, and Scout 10 times each. A second tap is never required.
 - From Pins, Forecast, Scout, the You menu, and pin or hunt detail, Map finishes the transition in about 300ms with no hang and no half-drawn frame.
 - After each return the map pans, pinch-zooms, and a pin tap opens its popup.
 - Ten quick Map → Pins → Map → Forecast → Map → Scout → Map cycles leave the map usable.
@@ -192,23 +199,23 @@ None. This brief is approved and final. Do not wait.
 
 ## Constraints
 
-- Status: **FINAL, approved to build** (Beau's go via Finley, 2026-09-30 at 4:01 PM CT). **URGENT hotfix.**
+- Status: **FINAL, approved to build** (Beau's go via Finley, 2026-09-30 at 4:01 PM CT). **Delta 2026-09-30 4:06 PM CT:** one tap on the Map tab always shows the map, including after switching from every other tab 10 times. **URGENT hotfix.**
 - Base: Origin main **`3903bb27c2a869926c7d8935dbf55ce35f20514a`** (Job 014 landed)
 - Do not touch product code from this SoftwareFactory ticket. Workers build on the product repo.
 - **One product PR.** A separate commit for the Expo bump is fine. The PR merges through the normal permitted path only.
 - **Build notes must include:**
   - Root cause in plain words, with the exact file and lines, and whether it came from 014 H1 (PR #18) or elsewhere
   - Each suspect ruled in or out, with the evidence
-  - The regression test that fails on `3903bb2` and passes with the fix. If a true UI freeze cannot be unit tested, the condition the test asserts is gone, and the gap
+  - The regression test that fails on `3903bb2` and passes with the fix, including the single-tap case after switching from every other tab 10 times. If a true UI freeze cannot be unit tested, the condition the test asserts is gone, and the gap
   - The fix (animation `none` for Map, or `shift`/none for all tabs, when that matches the cause). How the glass stays protected without depending on opacity
   - Which glass path runs (GlassView/BlurView, Simulator iOS version) and that the H1 glass test still passes
   - Expo versions in `package.json`, lockfile update, `npx expo-doctor` (or equivalent) result, and any peer warnings, quoted
-  - Exact Simulator steps for Lane covering AC B–D
+  - Exact Simulator steps for Lane covering AC B–D, including a single tap on the Map tab after switching from every other tab 10 times
   - Test count before and after on `3903bb2`, all green
   - Token usage
   - Confirmation that no new dependency was added
 - **Lane Simulator signoff (shots / recordings):**
-  - Recording: Map returns from Pins, Forecast, Scout, the You menu, and pin detail/hunt detail, on a fresh install and an existing install. No hang, no half-drawn frame
+  - Recording: one tap on the Map tab from Pins, Forecast, and Scout shows the map. Repeat from every other tab 10 times; each return is still one tap. Also return from the You menu and from pin detail/hunt detail, on a fresh install and an existing install. No hang, no half-drawn frame, no second tap
   - After each return: pan, pinch-zoom, and a pin tap that opens the popup
   - Stress recording: the ten-cycle Map → Pins → Map → Forecast → Map → Scout → Map path, then pan/zoom/pin tap still work
   - The same with Wind on, Property lines on, Topo, Satellite, and Standard, and with the shooting-light popover opened and closed before the switch
@@ -226,4 +233,4 @@ None. This brief is approved and final. Do not wait.
 
 ## Design intent (one line)
 
-Coming back to the map finishes the switch, the map still works, and the sunrise/sunset glass is still there.
+One tap on Map shows the map, the switch finishes, the map still works, and the sunrise/sunset glass is still there.
