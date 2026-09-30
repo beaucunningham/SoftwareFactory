@@ -1,0 +1,16 @@
+# Accept note
+
+Kai accepted job `015-map-tab-freeze-hotfix`.
+
+- Builder, tester, security, and ui passed. Origin https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/25, branch `cursor/map-tab-freeze-hotfix-c958`, is merged. Origin main is `0c7a6729600bd6ba3196a12891c15edc16a236ff`. Beau approved merging that PR before the UI check. The check ran after the merge and passed
+- Builder (bc-d3971eb9): tip `ba89faf696dc772e01d3256475a32f28dfeab164` on base `3903bb27c2a869926c7d8935dbf55ce35f20514a`. 281 tests pass (277 + 4) in the default zone, TZ=UTC, and TZ=Pacific/Auckland. `tsc --noEmit` passes. Tester commit `821e6ef` is test-only. Final pre-merge tip `821e6efe8138fc49730e0f983ae592bea2fb4da4`
+- Tester (bc-2635f059): PASS. 282 pass / 0 fail at `821e6efe8138fc49730e0f983ae592bea2fb4da4` under the default zone, TZ=UTC, and TZ=Pacific/Auckland. `tsc` is clean. `821e6ef` requires Map's duration to be exactly 0. The builder's parser let a missing duration pass
+- Security (bc-3d0ba427): PASS at `ba89faf`, no findings. The later tip `821e6ef` is test-only. Lockfile changes are expo 57.0.26, expo-constants 57.0.20, expo-router 57.0.24, @expo/ui 57.0.21 (transitive), and expo-modules-core 57.0.20 (transitive), all from registry.npmjs.org. `npm audit` stays 14 moderate / 0 high / 0 critical. No new direct dependencies
+- UI (bc-1e742a3f): PASS on the Expo web walk of `0c7a6729600bd6ba3196a12891c15edc16a236ff` at 390×844, 375×667, and 430×932. B1, B2, B3, B4, B5, and B7 pass on web. One tap on Map showed the map 10/10 from Pins, Forecast, Scout, and You at each size. 30 stress-cycle Map taps per size had 0 failures. The Map scene stayed at opacity 1. No high or medium issue. The docs report is `docs/job-015-ui-report.md` on branch `cursor/nock-brand-forecast-glass-cbca` (Origin PR #26 https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/26). Screenshots stay in the UI agent artifacts (`job-015-ui/`, bc-1e742a3f), not in the product repo
+- The hotfix is delivered
+- Root cause, from Job 014 H1: Map kept `animation: 'fade'` while `mapSceneStyle` pinned opacity at 1. Leaving Map (route index 0) drives progress to -1, and the activity interpolation only goes inactive at +1, so Map stays activityState 1. `prepareDetach` runs without `detachScreen`. On return the outgoing scene stays on top and the map takes no touches. The double tap is that same handoff. The fix sets Map to `animation: 'none'` with a 0ms spec so a blurred Map detaches. Other tabs still fade. Glass is guarded by `GlassView.didMoveToWindow`, not by opacity
+- No new direct dependencies
+- The UI worker changed no product code
+- Lane runs the iOS Simulator check of `0c7a672` separately. Native detach, MapKit, pinch, the fade on top of the map, liquid glass, background and foreground, and the hunt-detail return were not shown on web. They are not a product fail from this walk
+- Merge order: Origin #25 is already merged, by Beau's approved order (merge first, UI check after). Finley squash-merges this SoftwareFactory PR. Do not merge Origin #25 again. The UI report markdown rides on Origin #26 (`cursor/nock-brand-forecast-glass-cbca`), which is job 016's product branch
+- Factory status is `accepted`
