@@ -36,6 +36,7 @@ function loadRoles(root, pipeline = []) {
         id,
         description: data.description || "",
         readonly: data.readonly === "true",
+        retired: data.retired === "true",
         prompt: body,
         file: path.join(".cursor", "agents", fileName),
       };

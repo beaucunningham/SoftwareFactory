@@ -2,7 +2,7 @@
   "name": "software-factory",
   "version": "0.1.0",
   "private": true,
-  "description": "A software factory where specialist Cursor cloud agents work together to ship quality app code.",
+  "description": "A software factory where one Cursor builder cloud agent builds and tests each job.",
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
