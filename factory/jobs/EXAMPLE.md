@@ -16,7 +16,9 @@ factory/jobs/001-short-title/
   brief.md    # copied from factory/templates/brief.md
 ```
 
-A Grok bot replaces the placeholders in `brief.md`, then you run `npm start -- ready 001-short-title`. Workers add `build.md`, `test-report.md`, `security-report.md`, and `ui-report.md` in that same folder.
+A Grok bot replaces the placeholders in `brief.md`, then you run `npm start -- ready 001-short-title`. That brief is its own pull request.
+
+From Job 020, one builder session implements the brief and runs the tests. After Lane and Ari review the diff, one SoftwareFactory pull request adds `build.md`, `test-report.md`, `security-report.md`, and `ui-report.md` and records `built`, `tested`, `secured`, and `ui-checked` with one `set-status` command. The reports cite the builder's in-session results and that review. The UI report is markdown only.
 
 ## Example job.json
 
@@ -30,6 +32,6 @@ A Grok bot replaces the placeholders in `brief.md`, then you run `npm start -- r
 }
 ```
 
-Change status with the CLI. `new-job` sets `draft`. `ready` sets `briefed`. Workers use `set-status` for `built`, `tested`, `secured`, `ui-checked`, and the matching failure statuses. A Grok bot sets `changes-requested` or runs `accept` once status is `ui-checked`.
+Change status with the CLI. Do not hand-edit `job.json`. `new-job` sets `draft`. `ready` sets `briefed`. From Job 020, one `set-status` command records `built`, `tested`, `secured`, and `ui-checked`. Failure statuses are `test-failed`, `security-failed`, `ui-failed`, and `changes-requested`. A Grok bot runs `accept` once status is `ui-checked`. Finley merges.
 
 This file is only an example. It is not a live job, and `npm start -- status` ignores it.

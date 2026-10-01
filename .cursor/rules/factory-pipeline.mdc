@@ -1,12 +1,15 @@
 ---
-description: Grok bots manage. Cursor agents build, test, and check.
+description: Grok bots manage. One builder cloud agent builds and tests each job.
 alwaysApply: true
 ---
 
 - Grok bots are managers and admins. They talk to Beau, research, write `brief.md`, and accept or reject finished work.
-- Cursor agents are workers only: `builder` → `tester` → `security` → `ui`. They do not plan, research, or approve releases.
+- From Job 020, one Cursor cloud agent (`builder`, model grok-4.7) builds the job and runs its tests in that same session. Tester, security, and ui cloud agents are retired.
+- Lane (Mobile, including Simulator steps) and Ari review the diff. Fixes go back to the same builder agent.
 - Work from a job ticket in `factory/jobs/<id>/`. Do not start building until the brief is ready.
 - If the brief is missing or unclear, stop and send it back to the Grok bot. Do not guess.
-- After `test-failed`, `security-failed`, `ui-failed`, or `changes-requested`, the builder implements the existing brief unless a Grok bot updated it.
-- `security` and `ui` report only. They do not rewrite the feature.
-- Workers record status with `npm start -- set-status <status> <id>`. Only a Grok bot runs `npm start -- accept <id>`.
+- After `test-failed`, `security-failed`, `ui-failed`, or `changes-requested`, reply to the same builder with the existing brief unless a Grok bot updated it.
+- Status checks and merge readiness come from pull request state, mergeability, and CI. Do not run them through a cloud agent.
+- Record status only with `npm start -- set-status <status> <id>`. Post-build statuses for a job are one update and one SoftwareFactory pull request. Only a Grok bot runs `npm start -- accept <id>`. Do not hand-edit `job.json`.
+- Finley merges. Never force-push or rebase. If a branch conflicts after a squash, open a fresh branch from main with the identical diff.
+- UI reports are markdown only. Never screenshots.

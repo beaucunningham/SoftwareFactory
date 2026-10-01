@@ -6,7 +6,7 @@ alwaysApply: true
 - Implement the Grok bot brief. Do not add scope.
 - Prefer the smallest change that satisfies the acceptance criteria.
 - Do not add dependencies, frameworks, or extra files unless the brief requires them.
-- Cover new behavior with tests. Run them before you claim the work is done.
+- Cover new behavior with tests. The builder runs them in the build session before it claims the work is done.
 - Keep secrets out of the repo. Use placeholders and `.env.example` only.
 - Never store raw card numbers. Charge through a payment provider.
 - Leave existing behavior working unless the brief says to change it.

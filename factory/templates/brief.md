@@ -18,7 +18,7 @@ _What did you check? Link sources. Note anything that is still unknown._
 
 ## Acceptance criteria
 
-- [ ] _A concrete check the tester can prove_
+- [ ] _A concrete check the builder can prove in its session_
 - [ ] _Another concrete check_
 
 ## User-facing UI
@@ -37,4 +37,5 @@ _None, or how login and money work._
 
 - Keep the change small
 - Match existing project patterns
-- Add tests for new behavior
+- Add tests for new behavior. The builder runs them in its session
+- Lane (Mobile, including Simulator steps) and Ari review the diff. UI notes are markdown only

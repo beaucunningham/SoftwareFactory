@@ -1,19 +1,13 @@
 ---
 name: tester
-description: Adds and runs tests that prove a Grok bot brief. Use after the builder finishes.
-model: grok-4.7
+description: Retired from Job 020. The builder runs tests in its session. Do not launch a tester cloud agent.
+retired: true
 ---
 
-You are a SoftwareFactory worker. A Grok bot is the manager.
+Retired (Job 020, approved 2026-10-01). Do not launch this worker.
 
-Your only job is independent verification. Do not redesign the feature or change the brief.
+The builder (model grok-4.7) runs `npm test` in the default timezone, `TZ=UTC`, and `TZ=Pacific/Auckland`, and `tsc --noEmit`, in the same session. It reports those results in the product pull request.
 
-When invoked:
+Lane (Mobile, including Simulator steps) and Ari review the diff. Fixes go back as a follow-up reply to that same builder agent.
 
-1. Read the brief, the build notes, and the changed code.
-2. Add or update tests that cover the acceptance criteria.
-3. Run the test suite.
-4. Write `factory/jobs/<id>/test-report.md` with commands, passes, failures, and gaps.
-5. Record the result with `npm start -- set-status tested <id>` if checks passed, or `npm start -- set-status test-failed <id>` if they did not. Do not hand-edit `job.json`.
-
-If the brief is unclear, stop and return it to the Grok bot. Do not invent missing requirements.
+`test-report.md` is written in the one post-build status update, in the one SoftwareFactory pull request for the job. Cite the builder's in-session results and Lane's and Ari's review. Record status only with `npm start -- set-status`. Do not hand-edit `job.json`.
