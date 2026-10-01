@@ -2,9 +2,9 @@
 
 Owner: Sage · Implement: Kai / SoftwareFactory · iOS Sim: Lane
 
-Copy of `AC_NOCK_FEEDBACK_PARCELS_LOCATE_GPS_v0.md`. No secrets. **Status: FINAL, approved to build.** Beau's go came via Finley at 9:39pm CT on 2026-09-30. The app name stays **Nock**. **The AI's user-facing name stays Scout.** Weather and wind stay stubs (no live feed, no keys, no spend), sampled at the right coordinates. Sun and shooting-light times stay on-device. Bar is **Map | Pins | Forecast | Scout**. Dark default, `#BF5700` accent only (the I1 wordmark is Beau's approved brand use of it), pin style A. USGS topo stays approved. User-facing word is **pin**. **All 287 existing tests stay green.** The only allowed new dependency is `expo-location`, and only if it is not already in the repo. No secrets, no API keys, no spend, no proxy.
+Copy of `AC_NOCK_FEEDBACK_PARCELS_LOCATE_GPS_v0.md`, plus **Delta 2026-09-30 9:48pm CT (Beau)**. No secrets. **Status: FINAL, approved to build.** Beau's go came via Finley at 9:39pm CT on 2026-09-30. The 9:48pm delta is in force: owner names and phone numbers never appear in the app, and that is permanent; I7 adds a County appraisal district link; four defaults are confirmed (locate-me above Map Tools, tap opens the parcel popup with "Drop a pin here", the location prompt shows on the first Map visit after the tour, lines are cream with a dark casing). The app name stays **Nock**. **The AI's user-facing name stays Scout.** Weather and wind stay stubs (no live feed, no keys, no spend), sampled at the right coordinates. Sun and shooting-light times stay on-device. Bar is **Map | Pins | Forecast | Scout**. Dark default, `#BF5700` accent only (the I1 wordmark is Beau's approved brand use of it), pin style A. USGS topo stays approved. User-facing word is **pin**. **All 287 existing tests stay green.** The only allowed new dependency is `expo-location`, and only if it is not already in the repo. Do not add `expo-web-browser`; use it only when it is already installed, otherwise `Linking`. No secrets, no API keys, no spend, no proxy.
 
-**Hard rule (I7):** a strict field allowlist. Owner, mailing, value, and legal-description fields are stripped right after the response is read and are never rendered, stored, cached, or logged. If the iOS URL cache keeps raw responses and that cannot be prevented without new native code, stop I7 and report it. I1–I6 still ship.
+**Hard rule (I7):** a strict field allowlist. Owner, mailing, value, and legal-description fields are stripped right after the response is read and are never rendered, stored, cached, or logged. Owner names and phone numbers never appear in the UI, storage, cache, or logs. If the iOS URL cache keeps raw responses and that cannot be prevented without new native code, stop I7 and report it. I1–I6 still ship.
 
 **Job id:** `017-nock-feedback-parcels-locate-gps`  
 **Builds on:** Job 016 at Origin main `5bddc511dcaf6514115b13b997566d182df78d85` (Job 016 landed). Do not open on `0c7a672` or anything older. I1 replaces 016's cream wordmark image on the Map. I2 removes the Forecast control that 016 fixed. The 016 splash, app icon, sign-in/tour logo, and rename stay as they are.  
@@ -14,7 +14,7 @@ Brief: `brief.md` in this folder. Full product detail is in that brief.
 **Delivery:** one product pull request per milestone, in order: I1, I2, I3, I4, I5, I6, I7. I1 and I2 may share one pull request. I4 and I7 can stop without blocking the others. Each PR merges through the normal permitted path only.  
 Lane captures the shots and recordings listed at the end of this file. Those UI-check screenshots stay out of the product repo (see `note.md`).
 
-**Out of scope Beau gates (do not build, do not wait):** the alternatives to the Decisions for Beau defaults, and every Later item. Defaults are locked: locate-me stacks above Map Tools wherever that button already is; with Property lines on, a tap opens the parcel popup plus "Drop a pin here"; location is asked once on first Map focus after onboarding and the auto tour; the tour stays 8 steps; parcel lines are cream plus a dark casing. Later gates include owner names and owner phones (memo context only; never owner search), parcel highlight and paging and history, follow-me/heading, GPS for wind, background location, viewed-place time zone, the 24-hour clock setting, live weather/wind, offline parcels, county-gap detection, and nationwide parcels.
+**Out of scope Beau gates (do not build, do not wait):** the alternatives to the confirmed defaults, and every Later item. Beau confirmed these at 9:48pm CT on 2026-09-30: locate-me sits above Map Tools wherever that button already is; with Property lines on, a tap opens the parcel popup plus "Drop a pin here"; the location prompt shows on the first Map visit after the tour; parcel lines are cream with a dark casing. The tour stays 8 steps (locked at 9:39pm, not reopened). Owner names and phone numbers are not Later. They never appear in the app. Later gates are parcel highlight, paging, and history, follow-me/heading, GPS for wind, background location, viewed-place time zone, the 24-hour clock setting, live weather/wind, offline parcels, county-gap detection, and nationwide parcels.
 
 **Builder constraint:** cloud builders run on Linux and cannot run the iOS Simulator. Every milestone needs deep code tracing (written in the PR), unit and component tests, lockfile-version source citations, Linux-side `curl` measurements for I4 and I7, and exact Simulator steps that Lane runs and confirms. GPS items use **Simulator → Features → Location → Custom Location…** or `xcrun simctl location booted set <lat>,<lon>`. Permission resets use Settings → Privacy & Security → Location Services → Nock, or `xcrun simctl privacy booted reset location <bundleId>`. If Lane disagrees with a trace, it goes back before merge.
 
@@ -78,7 +78,7 @@ I4 can stop without blocking I1–I3, I5, or I6. A stop is reported. No paid or 
 6.3. Fallback is labeled: stack third line "Map center" / "Last known location" (inside the same glass); popover line "At map center (location off)" etc.; Forecast caption "…at map center". In `mapCenter` mode values follow the map's settled center (012).
 6.4. Refresh on foreground (and permission re-check), on a move > ~5 km, on midnight rollover, on permission change. `shouldRefresh` tests: 4.9 km no, 5.1 km yes.
 6.5. Sun times are computed for the location and displayed in device time. A Hawaii point with the device in CT gives Hawaii's sun instants (UTC-asserted test). Polar/invalid → "—".
-6.6. Permission is asked once at first Map focus after onboarding and after the auto tour (default), never over a modal; or per Beau's decision (recorded). Foreground-only: no "Always", no background modes.
+6.6. Permission is asked once at first Map focus after onboarding and after the auto tour, never over a modal. Beau confirmed this at 9:48pm CT on 2026-09-30. Foreground-only: no "Always", no background modes.
 6.7. The sun stack glass backing stays mounted and un-keyed across source/label changes (014 H1 test extended).
 
 ### I7. Parcel tap popup, hard allowlist (Beau item 3)
@@ -94,6 +94,16 @@ I4 can stop without blocking I1–I3, I5, or I6. A stop is reported. No paid or 
 7.9. **Always shown:** "Not survey grade. Tax parcel data, not legal boundaries or permission to hunt." and "Source: TxGIO, Texas appraisal districts." Glass card, dark, 4.5:1, ≥ 44pt targets, close ×, VoiceOver order title → rows → footer.
 7.10. The parcel popup counts as a modal for the tour guard and the I6 permission prompt. Pan, tour, Map Tools, You menu, and a pin popup all close it.
 7.11. Tests: synthetic PII fixture (no real names) → no PII in output, render tree, console spies, AsyncStorage writes, or errors; unknown fields dropped; lowercase keys; normalization cases (`"16.02 a"`, `"0"`, `" , TX 78734"`, `"   , ,"`, `"20250201"`, square feet); tap state machine; fetch states; request builder. 014's static PII-identifier test updated (situs allowed; owner/mail/value/legal-desc only in the denylist constant/drop logic).
+
+7.12. **I7-CAD1.** The parcel popup has a County appraisal district link. It opens that county's CAD site (home or property-search page). Lane checks Rockwall, Dallas, Llano, and one rural county. The opener is `expo-web-browser` when that package is already in the repo, otherwise `Linking`. Do not add `expo-web-browser`.
+
+7.13. **I7-CAD2.** A static committed table has one entry for each of the 254 Texas counties, built from the Texas Comptroller appraisal district directory. The header names that source and the as-of date. Every URL is `https`. A missing or blank CAD URL falls back to the Comptroller county directory page, and that fallback is unit-tested. No fetching and no scraping at runtime.
+
+7.14. **I7-CAD3.** The opened URL contains no owner name, mailing address, or value. A `PROP_ID` deep link is used only for a CAD that documents a public one, and the product PR lists those CADs. Every other county stays on the home or property-search page.
+
+7.15. **I7-CAD4.** No owner field and no phone field anywhere in the UI, storage, cache, or logs. Lane's privacy grep also finds no phone-number field.
+
+7.16. **I7-CAD5.** If the link fails, or there is no network, a toast shows and the app does not crash.
 
 ### G. Guardrails
 
@@ -111,7 +121,9 @@ G3. The nav lock amendment for Job 017 is in `brief.md` (handed by Product). Wor
 - Sun/forecast use the map center while GPS is available, the fallback is unlabeled, or background/"Always" location is added
 - Any excluded parcel field is rendered, stored (including the HTTP cache), logged, or held in state; a pin tap triggers identify; no attribution or "Not survey grade" note; any state is missing
 - I7 ships when the iOS URL cache keeps raw identify responses and that cannot be stopped without new native code
-- Any existing test or regression item fails; scope creep; an owner-name or owner-phone feature appears
+- Any existing test or regression item fails; scope creep; an owner name or a phone number appears in the UI, storage, cache, logs, or a URL
+- The County appraisal district link is missing, opens the wrong county, puts owner, mailing, or value data in the URL, uses a `PROP_ID` deep link for a CAD that is not listed, fetches or scrapes the directory at runtime, or a failed open crashes the app
+- The county table has fewer or more than 254 entries, or any URL is not `https`, or the blank-entry fallback is untested
 - UI-check screenshots are committed to the product repo
 - Any Job 001–016 file is edited
 
@@ -172,7 +184,8 @@ Setup: clean build at each PR's commit; iPhone SE (3rd gen) and 15 Pro Max (plus
 4. Tap a pin (×20): only pin popups. Double-tap to zoom: no parcel popup. Tap then pan quickly: none.
 5. "Drop a pin here" → the existing new-pin popup at that spot → save works. Layer off → tap → new-pin popup directly. Zoom 12 or Shreveport → tap-to-pin directly.
 6. With the parcel popup open: tap elsewhere → dismiss only; open Map Tools / You menu / tour → popup closes.
-7. **Privacy check** after 20 parcel taps: `cd "$(xcrun simctl get_app_container booted <bundleId> data)" && grep -rIl -e OWNER_NAME -e MAIL_ADDR -e NAME_CARE -e MKT_VALUE -e LEGAL_DESC . ; grep -rl -a -e OWNER_NAME -e MAIL_ADDR Library/Caches` → **no matches**. During the taps, `xcrun simctl spawn booted log stream --level debug --predicate 'process CONTAINS "Nock"'` (and the Metro console) shows no owner/mail/value data. A match in `Cache.db` that cannot be prevented without new native code stops I7.
+7. **Privacy check** after 20 parcel taps: `cd "$(xcrun simctl get_app_container booted <bundleId> data)" && grep -rIl -e OWNER_NAME -e MAIL_ADDR -e NAME_CARE -e MKT_VALUE -e LEGAL_DESC . ; grep -rl -a -e OWNER_NAME -e MAIL_ADDR Library/Caches` → **no matches**. During the taps, `xcrun simctl spawn booted log stream --level debug --predicate 'process CONTAINS "Nock"'` (and the Metro console) shows no owner/mail/value data. A match in `Cache.db` that cannot be prevented without new native code stops I7. No phone field in the popup, the container, or the logs.
+8. **County appraisal district.** On a parcel popup for Rockwall, Dallas, Llano, and one rural county, tap the link. It opens that county's CAD home or property-search page. The URL has no owner, mailing, or value data. Airplane mode, or a failed open, shows a toast and the app stays up.
 
 **Regression (014–016 and earlier)**
 
@@ -182,6 +195,6 @@ Setup: clean build at each PR's commit; iPhone SE (3rd gen) and 15 Pro Max (plus
 - **016:** "Nock" on the home screen, splash, sign-in, You/About, permission strings; "Scout" everywhere; icon and splash unchanged; bundle ID/scheme unchanged; existing install keeps pins, logs, tour flag, settings.
 - Earlier: 013 floor zoom cycles (3 styles, Wind on/off, Property lines on); 012 wind arrows + badge; Topo + USGS attribution; ruler; tap-to-pin ×20 with the layer off; pin-detail Log a hunt preselects; thin gray tab line; no Scout suggestion chips; dark default; pin style A; orange accent only; no pin/log data lost.
 
-Lane captures: I1 stills on 3 styles × 3 devices; I2 recording of the H1 matrix + 015 stress; I3 recording of allow/deny/Settings/off/unavailable; I4 stills per spot/style/zoom + zoom hint + offline; I5 Forecast still with differing pin rows; I6 recording of the Dallas → Lubbock → Hawaii → Never → re-allow sequence; I7 stills of each state + the privacy grep output; test output.
+Lane captures: I1 stills on 3 styles × 3 devices; I2 recording of the H1 matrix + 015 stress; I3 recording of allow/deny/Settings/off/unavailable; I4 stills per spot/style/zoom + zoom hint + offline; I5 Forecast still with differing pin rows; I6 recording of the Dallas → Lubbock → Hawaii → Never → re-allow sequence; I7 stills of each state, the County appraisal district link for Rockwall, Dallas, Llano, and one rural county, the offline toast, and the privacy grep output; test output.
 
 Lane's UI-check screenshots stay out of the product repo. Only the UI report markdown goes in the product repo. See `note.md`.
