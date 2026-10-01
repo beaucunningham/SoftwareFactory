@@ -1,0 +1,10 @@
+# Build
+
+Origin builder shipped stacked draft Origin PRs on base main `5bddc511dcaf6514115b13b997566d182df78d85` (Job 016). Product notes: `docs/job-017-build.md`. All tests pass in the default zone, TZ=UTC, and TZ=Pacific/Auckland. `tsc` is clean. `expo-doctor` 21/21. No new dependencies (`expo-location` and `expo-web-browser` were already present). Base suite at `5bddc511` is 287 tests.
+
+- I1+I2, Origin PR #27: https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/27 (draft), tip `909619ea4fb0`. 290 tests. Text "Nock" wordmark. Forecast button removed. Sun stack moved top-left.
+- I3, Origin PR #28: https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/28 (draft), tip `0a9db087ad96`. 294 tests. Locate-me sits above Map Tools. Map Tools is bottom-right in code, flagged for Beau. "My location" row removed.
+- I4, Origin PR #29: https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/29 (draft), tip `f3b1597f5547`. 298 tests. Parcel lines are outline-only. Root cause: an `esriSLS` line symbol on a polygon layer made ArcGIS fill the polygons. Fix is `esriSFSNull` fill with an outline. Two zoom bands. Min zoom 13.
+- I5, Origin PR #30: https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/30 (draft), tip `4017b1bf7c8a`. 301 tests. Stub forecast takes lat/lon. Dallas and Llano differ.
+- I6, Origin PR #31: https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/31 (draft), tip `c1c9ba9504b2`. 306 tests. GPS resolver: current fix, then last known within 24h, then map center, then persisted, then default. Labeled. 5 km hysteresis. Prompt once on Map after the tour.
+- I7 STOPPED under the brief's hard rule, Origin PR #32: https://cursor.com/codebase/beau-cunningham/hunting-companion/pull/32 (draft), tip `56fc40b3f05c`. TxGIO identify returns owner, mailing, value, and legal fields with `cache-control: public`. RN 0.86.3's RCTNetworking uses `NSURLRequestUseProtocolCachePolicy`, so the body can land in Cache.db. Preventing that needs new native code. No identify call, popup, CAD link, or county table shipped. Reported to Sage for Beau. I1–I6 still ship.
