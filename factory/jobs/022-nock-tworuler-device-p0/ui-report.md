@@ -6,7 +6,7 @@ Final main `ee700dd0f5f3a22fb1b8c516d5da4021d1ebd944` (Origin #92).
 
 UI QA passed #90, #91, and #92 after one bounce each.
 
-The Simulator gate on final main is the accept step. Landed time is still open.
+Lane finished the Simulator gate at 2:28pm CT on 2026-10-01 on final main `ee700dd0f5f3a22fb1b8c516d5da4021d1ebd944`.
 
 This report is markdown only. No screenshots.
 
@@ -18,4 +18,4 @@ This report is markdown only. No screenshots.
 
 ## Result
 
-PASS. UI QA passed #90, #91, and #92 after one bounce each. The Simulator gate on final main waits for accept.
+UI QA passed #90, #91, and #92 after one bounce each. Simulator gate at 2:28pm CT: M1/M2 PASS (a real two-finger hold can't be tested in the Simulator; Beau verified it on his iPhone at about 7:54pm CT, "all looks good"), AC 4.1 PASS, M5 PASS, Forecast caption PASS. AC 3.1 on Pro/Pro Max FAILED (wind arrows in the status band). The Engineering Manager deferred it to Job 023 as item B1.
