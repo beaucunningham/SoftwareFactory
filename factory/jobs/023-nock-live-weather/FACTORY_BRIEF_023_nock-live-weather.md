@@ -2,7 +2,7 @@
 
 Origin repo: https://cursor.com/codebase/beau-cunningham/hunting-companion
 
-Go: unknown. No job record for 023 was in this repository before this status pull request. The original brief text is not in this repository. Figures that are not listed here were left blank.
+Go: Thu 10/1/2026 7:55pm CT. Landed: the Mobile QA Lead's Simulator gate passed on hunting-companion main `68d69d8` (#109) at 9:09am CT Fri 10/2/2026. Duration: about 13h14m, inflated by the QA Mac being offline 4:05–8:39am CT. No job record for 023 was in this repository before this status pull request. The original brief text is not in this repository. Figures that are not listed here were left blank.
 
 AC: `AC_NOCK_LIVE_WEATHER_v0.md`
 

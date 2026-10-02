@@ -2,7 +2,7 @@
 
 Brief: `FACTORY_BRIEF_023_nock-live-weather.md`. AC: `AC_NOCK_LIVE_WEATHER_v0.md`. Origin repo: https://cursor.com/codebase/beau-cunningham/hunting-companion
 
-Go: unknown. No job record for 023 was in this repository before this status pull request. Duration from go to landed: unknown.
+Go: Thu 10/1/2026 7:55pm CT. Landed: the Mobile QA Lead's Simulator gate passed on hunting-companion main `68d69d8` (#109) at 9:09am CT Fri 10/2/2026. Duration: about 13h14m. That duration was inflated by the QA Mac being offline 4:05–8:39am CT. No job record for 023 was in this repository before this status pull request.
 
 The main job builder is `bc-d9b374b6`. The 023b builder is `bc-c8415162-1cd5-5b37-8707-41e368ae8458`.
 
@@ -29,7 +29,7 @@ The Simulator gate passed on `68d69d8` on 2026-10-02 at 9:09am CT. The run used 
 
 ## Process stats
 
-- Go: unknown. Landed 9:09am CT on 2026-10-02 (Simulator pass on `68d69d8`). Duration: unknown.
+- Go: Thu 10/1/2026 7:55pm CT. Landed 9:09am CT Fri 10/2/2026 (Simulator pass on `68d69d8`, #109). Duration: about 13h14m, inflated by the QA Mac being offline 4:05–8:39am CT.
 - Cloud-agent runs: builders `bc-d9b374b6` and `bc-c8415162-1cd5-5b37-8707-41e368ae8458`, plus this status agent. Any other runs: unknown.
 - Origin pull requests recorded here: #100 merged as `cde4ee972e706fd54b9d4165068335f86f2cfa6f`, #109 merged as `68d69d83208ebc3a2637097901b02ea06357a85a`. Other pull requests in the series: unknown.
 - Review bounces recorded here: 1 (Mobile QA Lead on 023b, B2). The first Simulator gate failed 3 checks on `cde4ee9`.

@@ -4,7 +4,7 @@ Job `023-nock-live-weather` is accepted.
 
 Brief: `FACTORY_BRIEF_023_nock-live-weather.md`. AC: `AC_NOCK_LIVE_WEATHER_v0.md`. Origin repo: https://cursor.com/codebase/beau-cunningham/hunting-companion
 
-Go: unknown. No job record for 023 was in this repository before this status pull request. The Mobile QA Lead finished the Simulator gate at 9:09am CT on 2026-10-02 on final main `68d69d83208ebc3a2637097901b02ea06357a85a`. Duration from go to landed: unknown.
+Go: Thu 10/1/2026 7:55pm CT. The Mobile QA Lead finished the Simulator gate at 9:09am CT Fri 10/2/2026 on final main `68d69d83208ebc3a2637097901b02ea06357a85a` (#109). Duration from go to landed: about 13h14m. That duration was inflated by the QA Mac being offline 4:05–8:39am CT. No job record for 023 was in this repository before this status pull request.
 
 Recorded product pull requests:
 
