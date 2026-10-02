@@ -15,13 +15,13 @@ Write briefs in this SoftwareFactory repo. Launch that one builder on the produc
 - Launch one builder Cloud Agent (model grok-4.7) on the `productRepo` URL from `factory/config.json`
 - Give that builder the brief path or content from `factory/jobs/<id>/`
 - The builder runs `npm test` in the default timezone, `TZ=UTC`, and `TZ=Pacific/Auckland`, and `tsc --noEmit`, in that session, and reports the results in the product pull request
-- Ask Lane (Mobile, including Simulator steps) and Ari to review the diff. Send real fixes as a follow-up reply to the same builder agent
+- Ask the Mobile QA Lead (including Simulator steps) and the AI Product Owner to review the diff. Send real fixes as a follow-up reply to the same builder agent
 - Read pull request state, mergeability, and CI checks directly. Do not start a cloud run for status or merge readiness
 - After review, record `built`, `tested`, `secured`, and `ui-checked` with one `npm start -- set-status` command and one SoftwareFactory pull request. Use `npm start -- prompt status <id>`. Keep that prompt short. Do not restate the job
-- In that pull request, write `build.md`, `test-report.md`, `security-report.md`, and `ui-report.md`. Cite the builder's in-session results and Lane's and Ari's review. The UI report is markdown only
+- In that pull request, write `build.md`, `test-report.md`, `security-report.md`, and `ui-report.md`. Cite the builder's in-session results and the Mobile QA Lead's and the AI Product Owner's review. The UI report is markdown only
 - Run `npm start -- accept <id>` when status is `ui-checked` and you accept the result
 - Run `npm start -- set-status changes-requested <id>` to send the same brief back to the same builder
-- Leave merges to Finley
+- Leave merges to the Engineering Manager
 
 ## Do not
 
@@ -38,7 +38,7 @@ Write briefs in this SoftwareFactory repo. Launch that one builder on the produc
 ## Handoff
 
 ```text
-Beau → Grok bot → brief.md → builder (grok-4.7) → Lane and Ari review → one status update → Grok bot
+Beau → Grok bot → brief.md → builder (grok-4.7) → Mobile QA Lead and AI Product Owner review → one status update → Grok bot
 ```
 
 The brief is its own pull request (`new-job`, then `ready`). Everything after that in SoftwareFactory for the job is one pull request.

@@ -5,7 +5,7 @@ const path = require("node:path");
 const { createJob, findJob, listJobs, markReady, setJobStatus } = require("./jobs");
 const { loadRoles } = require("./roles");
 
-// Passing statuses recorded together after the builder session and Lane/Ari review.
+// Passing statuses recorded together after the builder session and Mobile QA Lead/AI Product Owner review.
 const POST_BUILD_CHAIN = ["built", "tested", "secured", "ui-checked"];
 
 function loadConfig(root) {
@@ -25,7 +25,7 @@ function formatNext(next, status) {
     return "next: grokbot (manager)";
   }
   if (next === "review") {
-    return "next: Lane and Ari review the diff";
+    return "next: Mobile QA Lead and AI Product Owner review the diff";
   }
   if (next === "status-update") {
     return "next: one status update through ui-checked";
@@ -47,7 +47,7 @@ function formatRoles(roles) {
     const retiredIds = retired.map((role) => role.id).sort();
     lines.push(
       "",
-      `Retired from Job 020: ${retiredIds.join(", ")}. One builder session runs the checks. Lane and Ari review the diff.`,
+      `Retired from Job 020: ${retiredIds.join(", ")}. One builder session runs the checks. Mobile QA Lead and AI Product Owner review the diff.`,
     );
   }
   lines.push("", "Managers: Grok bots write the brief and accept finished work.");
@@ -72,7 +72,7 @@ function waitingFor(next) {
     return "a Grok bot";
   }
   if (next === "review") {
-    return "Lane and Ari to review the diff";
+    return "Mobile QA Lead and AI Product Owner to review the diff";
   }
   if (next === "status-update") {
     return "the one post-build status update";
@@ -100,7 +100,7 @@ function retiredWorkerMessage(roleId) {
   const lines = [
     `Retired (Job 020, approved 2026-10-01). Do not start a ${roleId} cloud agent.`,
     "One builder (grok-4.7) builds the job and runs npm test in the default TZ, UTC, and Pacific/Auckland, plus tsc --noEmit, in that same session.",
-    "Lane (Mobile, including Simulator steps) and Ari review the diff. Fixes are a follow-up to that same builder.",
+    "Mobile QA Lead (including Simulator steps) and AI Product Owner review the diff. Fixes are a follow-up to that same builder.",
     "Record built, tested, secured, and ui-checked in one status update and one SoftwareFactory pull request.",
     "Reports cite the builder's in-session results and that review. See AGENTS.md.",
   ];
@@ -139,7 +139,7 @@ function statusUpdatePrompt(job) {
     `One SoftwareFactory pull request for ${job.id}. Do not restate the job.`,
     command,
     "Add build.md, test-report.md, security-report.md, and ui-report.md in that same pull request.",
-    "Cite the builder's in-session test results and Lane's and Ari's diff review.",
+    "Cite the builder's in-session test results and the Mobile QA Lead's and the AI Product Owner's diff review.",
     "UI report is markdown only. Do not hand-edit job.json.",
   ].join("\n");
 }
@@ -286,10 +286,10 @@ function helpText() {
     "  npm start -- accept [job-id]",
     "  npm start -- status",
     "",
-    "Pipeline: grokbot → builder → Lane and Ari review → one status update → grokbot",
+    "Pipeline: grokbot → builder → Mobile QA Lead and AI Product Owner review → one status update → grokbot",
     "The builder runs npm test in the default TZ, UTC, and Pacific/Auckland, and tsc --noEmit, in that session.",
     "Post-build statuses (built, tested, secured, ui-checked) are one CLI update and one SoftwareFactory pull request.",
-    "Read pull request state, mergeability, and CI directly. Finley merges.",
+    "Read pull request state, mergeability, and CI directly. The Engineering Manager merges.",
     "Tester, security, and ui cloud agents are retired. A Grok bot accepts from ui-checked.",
   ].join("\n");
 }

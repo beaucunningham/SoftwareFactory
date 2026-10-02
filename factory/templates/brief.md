@@ -38,4 +38,4 @@ _None, or how login and money work._
 - Keep the change small
 - Match existing project patterns
 - Add tests for new behavior. The builder runs them in its session
-- Lane (Mobile, including Simulator steps) and Ari review the diff. UI notes are markdown only
+- Mobile QA Lead (including Simulator steps) and AI Product Owner review the diff. UI notes are markdown only
