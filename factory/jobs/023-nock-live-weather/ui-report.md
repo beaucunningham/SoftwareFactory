@@ -28,6 +28,8 @@ Origin #109 merged as main `68d69d83208ebc3a2637097901b02ea06357a85a` on 2026-10
 
 The Simulator gate passed on `68d69d8` on 2026-10-02 at 9:09am CT. The run used release-style JS, and the bundle inlines the weather Worker URL. B1, B2, fallback, and live weather and wind all passed.
 
+Go was Thu 10/1/2026 7:55pm CT. Duration from go to this gate: about 13h14m. That duration was inflated by the QA Mac being offline.
+
 The run was paused about 4:05–8:39am CT because the test Mac was offline.
 
 ## What landed
