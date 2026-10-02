@@ -46,7 +46,7 @@ function writeBrief(dir, jobId) {
 
 test("help lists the one-builder pipeline", () => {
   const output = run(["help"], { root });
-  assert.match(output, /grokbot → builder → Lane and Ari review → one status update → grokbot/);
+  assert.match(output, /grokbot → builder → Mobile QA Lead and AI Product Owner review → one status update → grokbot/);
   assert.match(output, /set-status <status> \[job-id\]/);
   assert.match(output, /set-status built tested secured ui-checked \[job-id\]/);
   assert.match(output, /accept \[job-id\]/);
@@ -139,7 +139,7 @@ test("set-status walks the pipeline and accept closes a ui-checked job", () => {
 
   const built = run(["set-status", "built", "001"], { root: dir });
   assert.match(built, /Job 001-add-a-notes-api status is built\./);
-  assert.match(built, /next: Lane and Ari review the diff/);
+  assert.match(built, /next: Mobile QA Lead and AI Product Owner review the diff/);
   assert.equal(readJobFile(dir, "001-add-a-notes-api").status, "built");
 
   assert.match(
@@ -166,7 +166,7 @@ test("set-status sends failures and change requests back to the builder", () => 
   run(["set-status", "built", "001-add-a-notes-api"], { root: dir });
 
   assert.match(run(["set-status", "test-failed", "001-add-a-notes-api"], { root: dir }), /follow-up to the same agent/);
-  assert.match(run(["set-status", "built", "001-add-a-notes-api"], { root: dir }), /Lane and Ari review the diff/);
+  assert.match(run(["set-status", "built", "001-add-a-notes-api"], { root: dir }), /Mobile QA Lead and AI Product Owner review the diff/);
   run(["set-status", "tested", "001-add-a-notes-api"], { root: dir });
   assert.match(run(["set-status", "security-failed", "001-add-a-notes-api"], { root: dir }), /next: builder/);
   run(["set-status", "built", "001-add-a-notes-api"], { root: dir });

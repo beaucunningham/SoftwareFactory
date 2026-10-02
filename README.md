@@ -2,7 +2,7 @@
 
 A software factory for programming apps. **Grok bots are the managers.** **One Cursor cloud agent builds each job.**
 
-You tell a Grok bot what you want. It researches and writes the brief. From Job 020, you start one builder (model grok-4.7). That agent implements the brief and runs the tests in the same session. Lane and Ari review the diff. The Grok bot then accepts the result or sends a follow-up to that same builder.
+You tell a Grok bot what you want. It researches and writes the brief. From Job 020, you start one builder (model grok-4.7). That agent implements the brief and runs the tests in the same session. The Mobile QA Lead and the AI Product Owner review the diff. The Grok bot then accepts the result or sends a follow-up to that same builder.
 
 > **Description:** Grok bots manage. One builder (grok-4.7) builds and tests each job.
 
@@ -13,15 +13,15 @@ You start every step by hand from this CLI and [cursor.com/agents](https://curso
 GitHub Actions runs `npm test` on pull requests and on pushes to `main`.
 
 ```text
-Beau → Grok bot → brief → builder (grok-4.7) → Lane and Ari review → one status update → Grok bot
+Beau → Grok bot → brief → builder (grok-4.7) → Mobile QA Lead and AI Product Owner review → one status update → Grok bot
 ```
 
 | Who | Role | Job |
 | --- | --- | --- |
 | **Grok bot** | Manager / admin | Talk to you, research, write the brief, accept or reject the result |
 | **builder** | Cursor worker (grok-4.7) | Implement the brief and run tests in that session |
-| **Lane and Ari** | Review | Review the diff. Lane (Mobile) also runs Simulator steps |
-| **Finley** | Merge | Merges when the pull request state, mergeability, and CI say it is ready |
+| **Mobile QA Lead and AI Product Owner** | Review | Review the diff. The Mobile QA Lead also runs Simulator steps |
+| **Engineering Manager** | Merge | Merges when the pull request state, mergeability, and CI say it is ready |
 
 Tester, security, and ui cloud agents are retired from Job 020. Their prompts point at this flow. Cursor agents do not plan the product, do research, or approve releases.
 
@@ -79,7 +79,7 @@ npm test
 
    A parent Cursor agent can follow `.cursor/skills/run-factory/SKILL.md` after the brief is ready. That still means one builder on the product repo. Do not start tester, security, or ui agents.
 
-4. Lane (Mobile, including Simulator steps) and Ari review the diff. A real fix is a follow-up reply to the same builder, not a new agent:
+4. The Mobile QA Lead (including Simulator steps) and the AI Product Owner review the diff. A real fix is a follow-up reply to the same builder, not a new agent:
 
    ```bash
    npm start -- prompt follow-up <id>
@@ -94,7 +94,7 @@ npm test
    npm start -- set-status built tested secured ui-checked <id>
    ```
 
-   `build.md`, `test-report.md`, `security-report.md`, and `ui-report.md` go in that same pull request. Cite the builder's in-session test results and Lane's and Ari's diff review. The UI report is markdown only. Never screenshots. Do not hand-edit `job.json`.
+   `build.md`, `test-report.md`, `security-report.md`, and `ui-report.md` go in that same pull request. Cite the builder's in-session test results and the Mobile QA Lead's and the AI Product Owner's diff review. The UI report is markdown only. Never screenshots. Do not hand-edit `job.json`.
 
 6. Check progress, then accept or send the job back:
 
@@ -104,7 +104,7 @@ npm test
    npm start -- set-status changes-requested <id>
    ```
 
-   `accept` works only when status is `ui-checked`. A Grok bot runs it. Failure statuses are `test-failed`, `security-failed`, `ui-failed`, and `changes-requested`. Finley merges. Never force-push or rebase. If a branch conflicts after a squash, open a fresh branch from main with the identical diff.
+   `accept` works only when status is `ui-checked`. A Grok bot runs it. Failure statuses are `test-failed`, `security-failed`, `ui-failed`, and `changes-requested`. The Engineering Manager merges. Never force-push or rebase. If a branch conflicts after a squash, open a fresh branch from main with the identical diff.
 
 ```bash
 npm start -- roles

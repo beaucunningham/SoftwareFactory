@@ -17,19 +17,19 @@ https://cursor.com/codebase/beau-cunningham/tmp-9883dbb9b4ecf3e0
 Applies from Job 020. Jobs 001–019 keep their historical records.
 
 ```text
-Beau → Grok bot → brief.md → builder (grok-4.7) → Lane and Ari review → one status update → Grok bot
+Beau → Grok bot → brief.md → builder (grok-4.7) → Mobile QA Lead and AI Product Owner review → one status update → Grok bot
 ```
 
 | Who | Reads | Writes |
 | --- | --- | --- |
 | Grok bot | Beau, research | `brief.md`, accept/reject |
 | builder | `brief.md` | product code, test results in the product pull request |
-| Lane and Ari | the diff | review. Lane (Mobile) also runs Simulator steps |
+| Mobile QA Lead and AI Product Owner | the diff | review. The Mobile QA Lead also runs Simulator steps |
 | status update | builder results, that review | one SoftwareFactory pull request: `build.md`, `test-report.md`, `security-report.md`, `ui-report.md`, and status |
 
 Tester, security, and ui cloud agents are retired. Their prompts in `.cursor/agents/` point here.
 
-The builder runs `npm test` in the default timezone, `TZ=UTC`, and `TZ=Pacific/Auckland`, and `tsc --noEmit`, in the build session, and reports those results in the product pull request. `test-report.md`, `security-report.md`, and `ui-report.md` cite those results and Lane's and Ari's diff review. They are not written by separate check agents.
+The builder runs `npm test` in the default timezone, `TZ=UTC`, and `TZ=Pacific/Auckland`, and `tsc --noEmit`, in the build session, and reports those results in the product pull request. `test-report.md`, `security-report.md`, and `ui-report.md` cite those results and the Mobile QA Lead's and the AI Product Owner's diff review. They are not written by separate check agents.
 
 Real fixes go back as a follow-up reply to the same builder agent. Do not start a new agent for a review fix.
 
@@ -60,7 +60,7 @@ npm test
 - The brief is its own pull request: `new-job`, then `ready`.
 - Never force-push or rebase. If a branch conflicts after a squash, open a fresh branch from main with the identical diff.
 - UI reports are markdown only. Never screenshots.
-- Finley merges.
+- The Engineering Manager merges.
 
 ## Worker rules
 
